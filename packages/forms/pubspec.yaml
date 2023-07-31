@@ -1,0 +1,15 @@
+name: forms
+description: A package for building forms in the Betterment application.
+version: 0.0.1
+publish_to: none
+
+environment:
+  sdk: ">=3.0.2 <4.0.0"
+
+dependencies:
+  equatable: ^2.0.2
+  lints: ^2.1.1
+  meta: ^1.9.1
+
+dev_dependencies:
+  test: ^1.16.0

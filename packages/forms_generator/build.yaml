@@ -1,0 +1,15 @@
+targets:
+  $default:
+    builders:
+      forms_generator|forms:
+        enabled: true
+
+builders:
+  forms:
+    target: ":forms_generator"
+    import: "package:forms_generator/builder.dart"
+    builder_factories: ["forms"]
+    build_extensions: { ".dart": [".forms.g.part"] }
+    auto_apply: dependents
+    build_to: cache
+    applies_builders: ["source_gen|combining_builder"]

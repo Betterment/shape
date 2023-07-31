@@ -1,0 +1,19 @@
+name: shape
+command:
+  bootstrap:
+    usePubspecOverrides: true
+    runPubGetInParallel: false
+
+packages:
+  - packages/**
+
+scripts:
+  format:
+    run: >
+      melos exec -- "find lib test -name '*.dart' -not -name '*.g.dart' -not -name '*.freezed.dart' -print0 | xargs -0 dart format"
+    description: Run the formatter for all packages in this project.
+
+  test:
+    run: >
+      melos exec --dir-exists="test" -- "dart test"
+    description: Run the formatter for all packages in this project.

@@ -1,0 +1,18 @@
+include: package:lints/recommended.yaml
+
+linter:
+  rules:
+    - package_api_docs
+    - public_member_api_docs
+    - sort_pub_dependencies
+
+analyzer:
+  language:
+    strict-casts: true
+    strict-raw-types: true
+  errors:
+    missing_return: error
+    missing_required_param: error
+  exclude:
+    - "build/**"
+    - "**/*.g.dart"
