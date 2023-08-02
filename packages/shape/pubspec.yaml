@@ -1,0 +1,17 @@
+name: shape
+description: A package for building forms that can be easily reused, validated,
+  and parsed, primarily for Flutter apps.
+version: 0.0.1
+repository: https://github.com/betterment/shape/tree/main/packages/shape
+
+environment:
+  sdk: '>=3.0.2 <4.0.0'
+
+dependencies:
+  equatable: ^2.0.2
+  meta: ^1.9.1
+
+dev_dependencies:
+  checks: ^0.2.2
+  lints: ^2.1.1
+  test: ^1.24.5

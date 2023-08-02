@@ -2,8 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/packages/forms/melos_forms.iml" filepath="$PROJECT_DIR$/packages/forms/melos_forms.iml" />
-      <module fileurl="file://$PROJECT_DIR$/packages/forms_generator/melos_forms_generator.iml" filepath="$PROJECT_DIR$/packages/forms_generator/melos_forms_generator.iml" />
+      <module fileurl="file://$PROJECT_DIR$/packages/shape/melos_shape.iml" filepath="$PROJECT_DIR$/packages/shape/melos_shape.iml" />
+      <module fileurl="file://$PROJECT_DIR$/packages/shape/example/melos_shape_example.iml" filepath="$PROJECT_DIR$/packages/shape/example/melos_shape_example.iml" />
+      <module fileurl="file://$PROJECT_DIR$/packages/shape_generator/melos_shape_generator.iml" filepath="$PROJECT_DIR$/packages/shape_generator/melos_shape_generator.iml" />
+      <module fileurl="file://$PROJECT_DIR$/packages/shape_starter_kit/melos_shape_starter_kit.iml" filepath="$PROJECT_DIR$/packages/shape_starter_kit/melos_shape_starter_kit.iml" />
       <module fileurl="file://$PROJECT_DIR$/melos_shape.iml" filepath="$PROJECT_DIR$/melos_shape.iml" />
     </modules>
   </component>

@@ -1,0 +1,21 @@
+name: shape_example
+description: An example project showcasing how to build a form body using the shape package.
+version: 1.0.0
+publish_to: none
+
+environment:
+  sdk: '>=3.0.2 <4.0.0'
+
+dependencies:
+  shape:
+    path: ../
+  shape_starter_kit:
+    path: ../../shape_starter_kit
+
+dev_dependencies:
+  build_runner: ^2.4.6
+  checks: ^0.2.2
+  lints: ^2.1.1
+  shape_generator:
+    path: ../../shape_generator
+  test: ^1.21.0
