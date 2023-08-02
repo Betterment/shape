@@ -137,4 +137,4 @@ cd example
 flutter pub run build_runner build --delete-conflicting-outputs
 ```
 
-A new form body will be generated based on the contents of [`example/lib/form_bodies/example_form_body.dart`](https://github.com/betterment/shape/tree/main/packages/shape/example/lib/form_bodies/example_form_body.dart). After the code generator has completed, examine the contents of the file [`example/lib/form_bodies/example_form_body.g.dart`](https://github.com/betterment/shape/tree/main/packages/shape/example/lib/form_bodies/example_form_body.g.dart).
+A new form body will be generated based on the contents of [`example/lib/example_form_body.dart`](https://github.com/betterment/shape/tree/main/packages/shape/example/lib/example_form_body.dart). After the code generator has completed, examine the contents of the file [`example/lib/example_form_body.g.dart`](https://github.com/betterment/shape/tree/main/packages/shape/example/lib/example_form_body.g.dart).

@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:analyzer/dart/element/element.dart';
-import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:build/build.dart';
 import 'package:shape/shape.dart';
@@ -185,14 +184,6 @@ that returns an instance of "${generatedClassNames.generatedFormBodyClassName}".
     return validConstructors.first;
   }
 
-  Future<bool> _isRunningNullSafe(
-    Element element,
-    BuildStep buildStep,
-  ) async {
-    final classMetadata = ClientClassMetadata.fromElement(element);
-    return classMetadata.baseType.nullabilitySuffix != NullabilitySuffix.star;
-  }
-
   Future<List<ClientConstructorMetadata>> _getClientConstructorData(
     Element element,
     BuildStep buildStep,
@@ -281,7 +272,7 @@ that returns an instance of "${generatedClassNames.generatedFormBodyClassName}".
 
     final returnStatement = constructorMetadata.returnStatement;
 
-    // TODO: Support identifiers and other value references in the future.
+    // TODO(jeroen-meijer): Support identifiers and other value references
     final expression = returnStatement!.expression;
     if (expression is! MethodInvocation) {
       throw Exception(

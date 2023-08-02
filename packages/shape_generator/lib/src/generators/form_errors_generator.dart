@@ -177,10 +177,7 @@ Copies this ${generatedClassNames.generatedFormErrorsClassName} and replaces the
     final copyWithFields = [
       for (final field in fields)
         // ignore: no_adjacent_strings_in_list
-        '${field.fieldIdentifier.name}: '
-            '${field.fieldIdentifier.name} == _defaultValue '
-            '? _instance.${field.fieldIdentifier.name} '
-            ': ${field.fieldIdentifier.name} as ${field.errorType.potentiallyNullableDisplayString.nullableTypeString},',
+        '''${field.fieldIdentifier.name}: ${field.fieldIdentifier.name} == _defaultValue ? _instance.${field.fieldIdentifier.name} : ${field.fieldIdentifier.name} as ${field.errorType.potentiallyNullableDisplayString.nullableTypeString},''',
     ];
     writeSingleReturnFunction(
       returnType: generatedClassNames.generatedFormErrorsClassName,
@@ -194,7 +191,7 @@ Copies this ${generatedClassNames.generatedFormErrorsClassName} and replaces the
           ),
       ],
       returnValue:
-          '${generatedClassNames.generatedFormErrorsClassName}(${copyWithFields.join()})',
+          '''${generatedClassNames.generatedFormErrorsClassName}(${copyWithFields.join()})''',
       isOverride: true,
     );
 

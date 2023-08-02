@@ -18,6 +18,7 @@ class ClientClassMetadata {
     required this.typeParameters,
   });
 
+  /// Constructs a [ClientClassMetadata] from an [Element].
   factory ClientClassMetadata.fromElement(
     Element element, {
     DartType? withInstanceType,
@@ -48,28 +49,71 @@ class ClientClassMetadata {
     );
   }
 
+  /// The base type of the class.
+  ///
+  /// For example: `GenericFormField<T>`
   final InterfaceType baseType; // GenericFormField<T>
+
+  /// The supertype of the class.
+  ///
+  /// For example: `FormField<T?, T?, GenericFormFieldValidationError>`
   final InterfaceType?
       supertype; // FormField<T?, T?, GenericFormFieldValidationError>
+
+  /// The instance type of the class. This is the specific type of the class
+  /// with all type parameters resolved.
+  ///
+  /// For example: `GenericFormField<int>`
   final DartType? instanceType; // GenericFormField<int>
+
+  /// Indicates whether the class is abstract.
   final bool isAbstract;
+
+  /// Indicates whether the class is an enum.
   final bool isEnum;
+
+  /// Indicates whether the class is a mixin.
   final bool isMixin;
+
+  /// The constructors of the class.
   final List<ConstructorElement> constructors;
+
+  /// The fields of the class.
   final Map<String, DartType> fields;
+
+  /// The methods of the class.
   final List<ClientClassMethodMetadata> methods;
+
+  /// The type parameters of the class.
   final List<TypeParameterElement> typeParameters;
 
+  /// The base name of the class (based on the [baseType]).
   String get name => baseType.getDisplayString(withNullability: false);
 
+  /// Whether this is a valid class or subclass that can be used to generate
+  /// form body code.
   bool get isValid => isAbstract && !isEnum && !isMixin;
 
   @override
   String toString() {
-    return 'ClientClassMetadata(baseType: $baseType, supertype: $supertype, instanceType: $instanceType, isAbstract: $isAbstract, isEnum: $isEnum, isMixin: $isMixin, constructors: $constructors, fields: $fields, methods: $methods, typeParameters: $typeParameters)';
+    return 'ClientClassMetadata('
+        'baseType: $baseType, '
+        'supertype: $supertype, '
+        'instanceType: $instanceType, '
+        'isAbstract: $isAbstract, '
+        'isEnum: $isEnum, '
+        'isMixin: $isMixin, '
+        'constructors: $constructors, '
+        'fields: $fields, '
+        'methods: $methods, '
+        'typeParameters: $typeParameters'
+        ')';
   }
 }
 
+/// {@template client_class_method_metadata}
+/// Metadata about a method of a class (used in [ClientClassMetadata]).
+/// {@endtemplate}
 class ClientClassMethodMetadata {
   const ClientClassMethodMetadata._({
     required this.name,
@@ -80,16 +124,34 @@ class ClientClassMethodMetadata {
     required this.hasOverride,
   });
 
+  /// The name of the method.
   final String name;
+
+  /// The return type of the method.
   final DartType returnType;
+
+  /// The parameters of the method.
   final List<ParameterElement> parameters;
+
+  /// Indicates whether the method is abstract.
   final bool isAbstract;
+
+  /// Indicates whether the method is static.
   final bool isStatic;
+
+  /// Indicates whether the method is an override.
   final bool hasOverride;
 
   @override
   String toString() {
-    return 'ClientClassMethodMetadata(name: $name, returnType: $returnType, parameters: $parameters, isAbstract: $isAbstract, isStatic: $isStatic, hasOverride: $hasOverride)';
+    return 'ClientClassMethodMetadata('
+        'name: $name, '
+        'returnType: $returnType, '
+        'parameters: $parameters, '
+        'isAbstract: $isAbstract, '
+        'isStatic: $isStatic, '
+        'hasOverride: $hasOverride'
+        ')';
   }
 }
 
