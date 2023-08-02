@@ -19,7 +19,7 @@ A package for building forms that can be easily reused, validated, and parsed, p
 This package comes in three parts:
 
 - **The `shape` package** that contains the primary classes and annotations used for creating form bodies.
-- [**The `shape_generator` package**](../shape_generator/README.md), which is the code generator that runs on classes annotated with `@GenerateFormBody()`.
+- [**The `shape_generator` package**](https://github.com/betterment/shape/tree/main/packages/shape_generator/README.md), which is the code generator that runs on classes annotated with `@GenerateFormBody()`.
 
 ### Usage
 
@@ -42,7 +42,7 @@ To generate a form body, in this case called `ExampleFormBody`;
 
 1. Create an abstract class `ExampleFormBody` annotated with `@GenerateFormBody()`.
 2. Add the `_$ExampleFormBodyFields` mixin.
-3. Create a single unnamed factory that returns an instance of `_$ExampleFormBody` containing all form fields that should be present in the form body. All parameters must be an instance of a class that extends [`FormField`](./lib/src/form_field.dart), a class provided by this package.
+3. Create a single unnamed factory that returns an instance of `_$ExampleFormBody` containing all form fields that should be present in the form body. All parameters must be an instance of a class that extends `FormField`, a class provided by this package.
 
 A full example might look like this:
 
@@ -130,11 +130,11 @@ print(formBody.validate()) // TaxFormErrors(vatPercentage: null)
 
 ### Example
 
-To run the example, run `build_runner` in [the `example` folder](./example/).
+To run the example, run `build_runner` in [the `example` folder](https://github.com/betterment/shape/tree/main/packages/shape/example).
 
 ```shell
 cd example
 flutter pub run build_runner build --delete-conflicting-outputs
 ```
 
-A new form body will be generated based on the contents of [`example/lib/form_bodies/example_form_body.dart`](./example/lib/form_bodies/example_form_body.dart). After the code generator has completed, examine the contents of the file [`example/lib/form_bodies/example_form_body.g.dart`](./example/lib/form_bodies/example_form_body.g.dart).
+A new form body will be generated based on the contents of [`example/lib/form_bodies/example_form_body.dart`](https://github.com/betterment/shape/tree/main/packages/shape/example/lib/form_bodies/example_form_body.dart). After the code generator has completed, examine the contents of the file [`example/lib/form_bodies/example_form_body.g.dart`](https://github.com/betterment/shape/tree/main/packages/shape/example/lib/form_bodies/example_form_body.g.dart).
