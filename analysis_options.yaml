@@ -2,15 +2,18 @@ include: package:lints/recommended.yaml
 
 linter:
   rules:
-    - package_api_docs
-    - public_member_api_docs
-    - sort_pub_dependencies
+    - cascade_invocations
     - lines_longer_than_80_chars
-    - sort_constructors_first
+    - package_api_docs
     - prefer_const_constructors
-    - prefer_const_declarations
     - prefer_const_constructors_in_immutables
+    - prefer_const_declarations
     - prefer_const_literals_to_create_immutables
+    - prefer_single_quotes
+    - public_member_api_docs
+    - require_trailing_commas
+    - sort_constructors_first
+    - sort_pub_dependencies
 
 analyzer:
   language:

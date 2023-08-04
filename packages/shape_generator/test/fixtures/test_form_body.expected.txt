@@ -146,9 +146,8 @@ class TestFormErrors extends FormErrors<_$TestFormBody> with EquatableMixin {
   /// The error for the nullableField field.
   final TestValidationError? nullableField;
 
-  /// Merges this TestFormErrors with the [other]
-  /// by replacing any empty fields in this instance with the corresponding field in
-  /// [other] while preserving the non-empty fields in this instance.
+  /// Merges this TestFormErrors with the [other] by replacing
+  /// any empty fields in this instance with the corresponding field in [other].
   TestFormErrors mergeWhereEmptyWith({
     required TestFormErrors other,
   }) {

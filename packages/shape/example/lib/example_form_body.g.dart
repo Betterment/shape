@@ -117,8 +117,9 @@ class ExampleFormErrors extends FormErrors<_$ExampleFormBody>
   /// The error for the age field.
   final GenericValidationError? age;
 
-  /// Merges this ExampleFormErrors with the [other] by replacing
-  /// any empty fields in this instance with the corresponding field in [other].
+  /// Merges this ExampleFormErrors with the [other]
+  /// by replacing any empty fields in this instance with the corresponding field in
+  /// [other] while preserving the non-empty fields in this instance.
   ExampleFormErrors mergeWhereEmptyWith({
     required ExampleFormErrors other,
   }) {

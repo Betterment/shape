@@ -1,5 +1,5 @@
 import 'package:checks/checks.dart';
-import 'package:test/test.dart';
+import 'package:test/test.dart' hide expect;
 import 'fixtures/fixtures.dart';
 
 void main() {
@@ -17,23 +17,23 @@ void main() {
     }
 
     test('constructor works properly', () {
-      expect(
+      check(
         () => buildSubject(
           stringField: 'abc',
           intField: '123',
           nullableField: null,
         ),
-        returnsNormally,
-      );
+      ).returnsNormally().isA<TestFormBody>();
     });
 
     test('supports value equality', () {
-      expect(
+      check(
         buildSubject(
           stringField: 'abc',
           intField: '123',
           nullableField: const Object(),
         ),
+      ).equals(
         buildSubject(
           stringField: 'abc',
           intField: '123',
@@ -49,45 +49,44 @@ void main() {
         nullableField: const Object(),
       );
 
-      expect(subject.stringField, 'abc');
-      expect(subject.intField, 123);
-      expect(subject.nullableField, const Object());
+      check(subject.stringField).equals('abc');
+      check(subject.intField).equals(123);
+      check(subject.nullableField).equals(const Object());
     });
 
     group('validate', () {
       test('returns a generated form errors instance', () {
-        expect(
+        check(
           buildSubject(
             stringField: 'abc',
             intField: '123',
             nullableField: const Object(),
-          ).validate(),
-          isA<TestFormErrors>(),
-        );
+          ).validate,
+        ).returnsNormally().isA<TestFormErrors>();
       });
 
       test('validates all fields', () {
-        expect(
+        check(
           buildSubject(
             stringField: 'abc',
             intField: '123',
             nullableField: const Object(),
-          ).validate(),
-          const TestFormErrors(),
-        );
+          ).validate,
+        ).returnsNormally().equals(const TestFormErrors());
 
-        expect(
+        check(
           buildSubject(
             stringField: '',
             intField: 'abc',
             nullableField: null,
-          ).validate(),
-          const TestFormErrors(
-            stringField: TestValidationError.empty,
-            intField: TestValidationError.empty,
-            nullableField: TestValidationError.empty,
-          ),
-        );
+          ).validate,
+        ).returnsNormally().equals(
+              const TestFormErrors(
+                stringField: TestValidationError.empty,
+                intField: TestValidationError.empty,
+                nullableField: TestValidationError.empty,
+              ),
+            );
       });
     });
 
@@ -99,13 +98,13 @@ void main() {
           nullableField: const Object(),
         );
         final actual = subject.copyWith(stringField: 'def');
-        final expected = buildSubject(
+        final checked = buildSubject(
           stringField: 'def',
           intField: '123',
           nullableField: const Object(),
         );
 
-        expect(actual, expected);
+        check(actual).equals(checked);
       });
 
       test('supports explicitly setting nullable fields to null', () {
@@ -115,25 +114,26 @@ void main() {
           nullableField: 'xyz',
         );
         final actual = subject.copyWith(nullableField: null);
-        final expected = buildSubject(
+        final checked = buildSubject(
           stringField: 'abc',
           intField: '123',
           nullableField: null,
         );
 
-        expect(actual, expected);
+        check(actual).equals(checked);
       });
     });
 
     test('toString returns correct string', () {
-      expect(
+      check(
         buildSubject(
           stringField: 'abc',
           intField: '123',
           nullableField: const Object(),
-        ).toString(),
-        r"_$TestFormBody(abc, 123, Instance of 'Object')",
-      );
+        ).toString,
+      ).returnsNormally().equals(
+            r"_$TestFormBody(abc, 123, Instance of 'Object')",
+          );
     });
   });
 
@@ -151,23 +151,23 @@ void main() {
     }
 
     test('constructor works properly', () {
-      expect(
+      check(
         () => buildSubject(
           stringField: TestValidationError.empty,
           intField: TestValidationError.empty,
           nullableField: TestValidationError.empty,
         ),
-        returnsNormally,
-      );
+      ).returnsNormally();
     });
 
     test('supports value equality', () {
-      expect(
+      check(
         buildSubject(
           stringField: TestValidationError.empty,
           intField: TestValidationError.empty,
           nullableField: TestValidationError.empty,
         ),
+      ).equals(
         buildSubject(
           stringField: TestValidationError.empty,
           intField: TestValidationError.empty,
@@ -183,9 +183,9 @@ void main() {
         nullableField: TestValidationError.empty,
       );
 
-      expect(subject.stringField, TestValidationError.empty);
-      expect(subject.intField, TestValidationError.empty);
-      expect(subject.nullableField, TestValidationError.empty);
+      check(subject.stringField).equals(TestValidationError.empty);
+      check(subject.intField).equals(TestValidationError.empty);
+      check(subject.nullableField).equals(TestValidationError.empty);
     });
 
     group('mergeWhereEmptyWith', () {
@@ -201,8 +201,7 @@ void main() {
           nullableField: TestValidationError.empty,
         );
 
-        expect(
-          subject.mergeWhereEmptyWith(other: other),
+        check(subject.mergeWhereEmptyWith(other: other)).equals(
           buildSubject(
             stringField: TestValidationError.empty,
             intField: null,
@@ -220,13 +219,13 @@ void main() {
           nullableField: null,
         );
         final actual = subject.copyWith(stringField: TestValidationError.empty);
-        final expected = buildSubject(
+        final checked = buildSubject(
           stringField: TestValidationError.empty,
           intField: null,
           nullableField: null,
         );
 
-        expect(actual, expected);
+        check(actual).equals(checked);
       });
 
       test('supports explicitly setting fields to null', () {
@@ -236,39 +235,38 @@ void main() {
           nullableField: TestValidationError.empty,
         );
         final actual = subject.copyWith(stringField: null);
-        final expected = buildSubject(
+        final checked = buildSubject(
           stringField: null,
           intField: TestValidationError.empty,
           nullableField: TestValidationError.empty,
         );
 
-        expect(actual, expected);
+        check(actual).equals(checked);
       });
     });
 
     test('errors getter returns all errors', () {
-      expect(
+      check(
         buildSubject(
           stringField: TestValidationError.empty,
           intField: null,
           nullableField: TestValidationError.empty,
-        ).errors,
-        [
-          TestValidationError.empty,
-          null,
-          TestValidationError.empty,
-        ],
-      );
+        ),
+      ).has((e) => e.errors, 'errors').deepEquals([
+        TestValidationError.empty,
+        null,
+        TestValidationError.empty,
+      ]);
     });
 
     test('toString returns correct string', () {
-      check(buildSubject(
-        stringField: TestValidationError.empty,
-        intField: null,
-        nullableField: TestValidationError.empty,
-      ).toString)
-          .returnsNormally()
-          .equals(
+      check(
+        buildSubject(
+          stringField: TestValidationError.empty,
+          intField: null,
+          nullableField: TestValidationError.empty,
+        ).toString,
+      ).returnsNormally().equals(
         '''TestFormErrors(TestValidationError.empty, null, TestValidationError.empty)''',
       );
     });

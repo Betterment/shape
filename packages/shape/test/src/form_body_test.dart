@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
+import 'package:checks/checks.dart';
 import 'package:shape/shape.dart';
-import 'package:test/test.dart';
+import 'package:test/test.dart' hide expect;
 
 class TestFormBody extends FormBody<TestFormErrors> with EquatableMixin {
   const TestFormBody();
@@ -23,17 +24,11 @@ class TestFormErrors extends FormErrors<TestFormBody> {
 void main() {
   group('FormBody', () {
     test('can be instantiated', () {
-      expect(
-        TestFormBody.new,
-        returnsNormally,
-      );
+      check(TestFormBody.new).returnsNormally();
     });
 
     test('validate method returns correct type', () {
-      expect(
-        TestFormBody().validate(),
-        isA<TestFormErrors>(),
-      );
+      check(TestFormBody().validate()).isA<TestFormErrors>();
     });
   });
 
@@ -42,43 +37,25 @@ void main() {
     const nonEmptyFormErrors = TestFormErrors(['Error', 123, null]);
 
     test('can be instantiated', () {
-      expect(
-        () => TestFormErrors(const []),
-        returnsNormally,
-      );
+      check(() => TestFormErrors(const [])).returnsNormally();
     });
 
     test('TestFormErrors.errors field returns given errors', () {
-      expect(
-        nonEmptyFormErrors._errors,
-        nonEmptyFormErrors.errors,
-      );
+      check(nonEmptyFormErrors._errors).equals(nonEmptyFormErrors.errors);
     });
 
     test(
       'isNotEmpty is true when list is not empty '
       'and contains non-null values',
       () {
-        expect(
-          emptyFormErrors.isNotEmpty,
-          isFalse,
-        );
-        expect(
-          nonEmptyFormErrors.isNotEmpty,
-          isTrue,
-        );
+        check(emptyFormErrors.isNotEmpty).isFalse();
+        check(nonEmptyFormErrors.isNotEmpty).isTrue();
       },
     );
 
     test('isEmpty is true when list is empty or only contains null values', () {
-      expect(
-        emptyFormErrors.isEmpty,
-        isTrue,
-      );
-      expect(
-        nonEmptyFormErrors.isEmpty,
-        isFalse,
-      );
+      check(emptyFormErrors.isEmpty).isTrue();
+      check(nonEmptyFormErrors.isEmpty).isFalse();
     });
   });
 }

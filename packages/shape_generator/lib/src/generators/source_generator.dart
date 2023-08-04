@@ -28,29 +28,29 @@ class FunctionParameter {
   final bool isRequired;
 }
 
-/// {@template source_generator}
+/// {@template source_buffer}
 /// A class that wraps a [StringBuffer] to make generating source code easier.
 ///
 /// Contains many methods used to generate parts of common Dart source code.
+///
+/// Instances of this class are given to classes that mix in the
+/// [SourceGenerator], which can use methods on this class to write source
+/// code to the buffer. Once all classes have added their source code, the
+/// buffer can be retrieved by calling [dump].
 /// {@endtemplate}
-abstract class SourceGenerator {
-  /// {@macro source_generator}
-  SourceGenerator();
+@sealed
+@immutable
+class SourceBuffer {
+  /// {@macro source_buffer}
+  SourceBuffer([
+    @visibleForTesting StringBuffer? buffer,
+  ]) : _buffer = buffer ?? StringBuffer();
 
-  final _buffer = StringBuffer();
-
-  /// The function that generates the source code using instructions available
-  /// in this class.
-  ///
-  /// This should be overridden by subclasses.
-  String generate();
+  final StringBuffer _buffer;
 
   /// Outputs the current contents of the buffer.
-  ///
-  /// This should **not** be overridden by subclasses, as it's used to generate
-  /// the final source code.
   @nonVirtual
-  String generateSource() {
+  String dump() {
     return _buffer.toString();
   }
 
@@ -441,4 +441,10 @@ abstract class SourceGenerator {
   void writeMixinDeclarationEnd() {
     _writeln('}');
   }
+}
+
+/// A mixin that provides methods for writing Dart code to a [SourceBuffer].
+mixin SourceGenerator {
+  /// Write the source code of this generator to the provided [SourceBuffer].
+  void write(SourceBuffer buffer);
 }

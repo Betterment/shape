@@ -1,5 +1,6 @@
+import 'package:checks/checks.dart';
 import 'package:shape/shape.dart';
-import 'package:test/test.dart';
+import 'package:test/test.dart' hide expect;
 
 class TestFormField<R, T, E> extends FormField<R?, R?, E> {
   TestFormField({
@@ -27,7 +28,7 @@ void main() {
           rawValue: 'mock-value',
         );
 
-        expect(subject.value, 'mock-value');
+        check(subject.value).equals('mock-value');
       });
     });
 
@@ -38,7 +39,7 @@ void main() {
           error: 'mock-error',
         );
 
-        expect(subject.validate(), 'mock-error');
+        check(subject.validate()).equals('mock-error');
       });
     });
   });

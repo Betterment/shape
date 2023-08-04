@@ -29,40 +29,38 @@ class ShapeGenerator extends GeneratorForAnnotation<GenerateFormBody> {
     final generatedClassNames =
         GeneratedClassNames(formBodyClassName: classMetadata.name);
 
+    final buffer = SourceBuffer();
+
     try {
-      final formBodySource = FormBodyGenerator(
+      FormBodyGenerator(
         enclosingClassMetadata: classMetadata,
         generatedClassNames: generatedClassNames,
         fields: formBodyFields,
-      ).generate();
+      ).write(buffer);
 
-      final formFieldsMixinSource = FormFieldsMixinGenerator(
+      FormFieldsMixinGenerator(
         enclosingClassMetadata: classMetadata,
         generatedClassNames: generatedClassNames,
         fields: formBodyFields,
-      ).generate();
+      ).write(buffer);
 
-      final formErrorsSource = !annotationInstance.generateFormErrors
-          ? ''
-          : FormErrorsGenerator(
-              enclosingClassMetadata: classMetadata,
-              generatedClassNames: generatedClassNames,
-              fields: formBodyFields,
-            ).generate();
+      if (annotationInstance.generateFormErrors) {
+        FormErrorsGenerator(
+          enclosingClassMetadata: classMetadata,
+          generatedClassNames: generatedClassNames,
+          fields: formBodyFields,
+        ).write(buffer);
+      }
 
-      final source = '''
-$formBodySource
-
-$formFieldsMixinSource
-
-$formErrorsSource''';
-
-      return source;
+      return buffer.dump();
     } catch (e) {
       throw Exception(
         '''
 An unknown error occurred while generating the form body for "${element.name}".
-Please report this error to the Flutter engineering team.
+Please make sure your class is valid and try again.
+
+If this issue keeps occurring please report an issue at
+  https://github.com/Betterment/shape/issues/new
 
 -----------------------------------------------
                Error Details

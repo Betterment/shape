@@ -2,10 +2,18 @@ import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/dart/element/type_visitor.dart';
 import 'package:analyzer/dart/element/visitor.dart';
+import 'package:meta/meta.dart';
 
+/// {@template client_class_metadata}
 /// Metadata about a constructor or factory method in the client codebase.
+/// {@endtemplate}
 class ClientClassMetadata {
-  const ClientClassMetadata._({
+  /// {@macro client_class_metadata}
+  ///
+  /// This constructor is only visible for testing purposes. Use
+  /// [ClientClassMetadata.fromElement] instead.
+  @visibleForTesting
+  const ClientClassMetadata({
     required this.baseType,
     this.supertype,
     this.instanceType,
@@ -33,7 +41,7 @@ class ClientClassMetadata {
     final typeVisitor = _DefaultTypeVisitor();
     element.thisType.accept(typeVisitor);
 
-    return ClientClassMetadata._(
+    return ClientClassMetadata(
       baseType: element.thisType,
       supertype: element.supertype,
       instanceType: withInstanceType ?? typeVisitor.type,

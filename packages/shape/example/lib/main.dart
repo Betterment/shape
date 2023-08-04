@@ -6,7 +6,7 @@ This project is not meant to be run like a normal Dart project, but instead
 showcases how to generate form bodies using Shape.
 
 Generate the form bodies by running:
-  dart pub run build_runner build --delete-conflicting-outputs
+  dart run build_runner build --delete-conflicting-outputs
 ''');
 
   final form = ExampleFormBody(name: 'John');
