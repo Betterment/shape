@@ -1,5 +1,3 @@
-<!-- Add bit about what changelog is -->
-
 # Changelog
 
 All notable changes to this project will be documented in this file.

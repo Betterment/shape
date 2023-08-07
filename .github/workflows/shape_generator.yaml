@@ -1,0 +1,65 @@
+name: shape_generator
+
+on:
+  push:
+    paths:
+      - 'packages/shape_generator/**'
+      - '.github/workflows/shape_generator.yaml'
+
+  pull_request:
+    paths:
+      - 'packages/shape_generator/**'
+      - '.github/workflows/shape_generator.yaml'
+
+jobs:
+  build:
+    defaults:
+      run:
+        working-directory: packages/shape_generator
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - uses: dart-lang/setup-dart@v1
+
+      - name: Install Dependencies
+        run: dart pub get
+
+      - name: Format
+        run: dart format --set-exit-if-changed .
+
+      - name: Analyze
+        run: dart analyze --fatal-infos --fatal-warnings .
+
+      - name: Run Tests
+        run: |
+          dart pub global activate coverage 1.6.3
+          dart test --coverage=coverage && dart pub global run coverage:format_coverage --lcov --in=coverage --out=coverage/lcov.info --packages=.dart_tool/package_config.json --report-on=lib
+
+      # FIXME: Uncomment when we check for coverage.
+      # - name: Check Code Coverage
+      #   uses: VeryGoodOpenSource/very_good_coverage@v2
+      #   with:
+      #     path: packages/shape_generator/coverage/lcov.info
+
+  # FIXME: Uncomment once repository is public
+  # pana:
+  #   defaults:
+  #     run:
+  #       working-directory: packages/shape_generator
+
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - uses: dart-lang/setup-dart@v1
+
+  #     - name: Install Dependencies
+  #       run: |
+  #         dart pub get
+  #         dart pub global activate pana
+  #         sudo apt-get install webp
+
+  #     - name: Verify Pub Score
+  #       run: ../../tool/verify_pub_score.sh
