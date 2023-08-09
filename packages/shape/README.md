@@ -5,14 +5,14 @@ A package for building forms that can be easily reused, validated, and parsed, p
 ### Table of Contents
 
 - [▲ Shape](#-shape)
-  - [Table of Contents](#table-of-contents)
-  - [Summary](#summary)
-  - [Usage](#usage)
-  - [Principle](#principle)
-  - [Features](#features)
-    - [Access parsed values](#access-parsed-values)
-    - [Automatic form error generation](#automatic-form-error-generation)
-  - [Example](#example)
+    - [Table of Contents](#table-of-contents)
+    - [Summary](#summary)
+    - [Usage](#usage)
+    - [Principle](#principle)
+    - [Features](#features)
+      - [Access parsed values](#access-parsed-values)
+      - [Automatic form error generation](#automatic-form-error-generation)
+    - [Example](#example)
 
 ### Summary
 

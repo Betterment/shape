@@ -1,11 +1,6 @@
 name: shape_starter_kit
 
 on:
-  push:
-    paths:
-      - 'packages/shape_starter_kit/**'
-      - '.github/workflows/shape_starter_kit.yaml'
-
   pull_request:
     paths:
       - 'packages/shape_starter_kit/**'

@@ -41,4 +41,4 @@ void main() {
 
 ### Example
 
-An example on how to use this package can be found in the [`shape` example project](../shape/example/README.md).
+An example on how to use this package can be found in the [`shape` example project](https://github.com/betterment/shape/tree/main/packages/shape/example/README.md).
