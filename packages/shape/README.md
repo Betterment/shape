@@ -18,8 +18,9 @@ A package for building forms that can be easily reused, validated, and parsed, p
 
 This package comes in three parts:
 
-- **The `shape` package** that contains the primary classes and annotations used for creating form bodies.
+- [**The `shape` package**](https://github.com/betterment/shape/tree/main/packages/shape/README.md) that contains the primary classes and annotations used for creating form bodies.
 - [**The `shape_generator` package**](https://github.com/betterment/shape/tree/main/packages/shape_generator/README.md), which is the code generator that runs on classes annotated with `@GenerateFormBody()`.
+- [**The `shape_starter_kit` package**](https://github.com/betterment/shape/tree/main/packages/shape_starter_kit/README.md), which contains a set of generic and commonly used form fields and functions for use with the `shape` package.
 
 ### Usage
 
