@@ -1,11 +1,6 @@
 name: shape
 
 on:
-  push:
-    paths:
-      - 'packages/shape/**'
-      - '.github/workflows/shape.yaml'
-
   pull_request:
     paths:
       - 'packages/shape/**'

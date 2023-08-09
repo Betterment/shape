@@ -1,11 +1,6 @@
 name: shape_generator
 
 on:
-  push:
-    paths:
-      - 'packages/shape_generator/**'
-      - '.github/workflows/shape_generator.yaml'
-
   pull_request:
     paths:
       - 'packages/shape_generator/**'
