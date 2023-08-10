@@ -1,5 +1,6 @@
 name: shape_generator
-description: The code generator for the shape package.
+description: The code generator for the shape package. For more information,
+  check out the README of the shape package.
 version: 0.0.1
 repository: https://github.com/betterment/shape/tree/main/packages/shape_generator
 
@@ -12,8 +13,7 @@ dependencies:
   equatable: ^2.0.2
   meta: ^1.9.1
   path: ^1.8.3
-  shape:
-    path: ../shape
+  shape: ^0.0.1
   source_gen: ^1.4.0
 
 dev_dependencies:
