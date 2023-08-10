@@ -10,8 +10,7 @@ environment:
 dependencies:
   equatable: ^2.0.2
   meta: ^1.9.1
-  shape:
-    path: ../shape
+  shape: ^0.0.1
 
 dev_dependencies:
   checks: ^0.2.2
