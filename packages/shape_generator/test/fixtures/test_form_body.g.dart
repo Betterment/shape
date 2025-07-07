@@ -17,8 +17,11 @@ class _$TestFormBody extends TestFormBody
   }) {
     return _$TestFormBody._(stringField, intField, nullableField);
   }
-  const _$TestFormBody._(this._stringField, this._intField, this._nullableField)
-    : super._();
+  const _$TestFormBody._(
+    this._stringField,
+    this._intField,
+    this._nullableField,
+  ) : super._();
   @override
   final NonEmptyStringFormField _stringField;
   @override
@@ -44,10 +47,10 @@ class _$TestFormBody extends TestFormBody
   _$TestFormBodyCopyWith get copyWith => _$TestFormBodyCopyWithImpl(this);
   @override
   List<Object?> get props => [
-    _stringField.rawValue,
-    _intField.rawValue,
-    _nullableField.rawValue,
-  ];
+        _stringField.rawValue,
+        _intField.rawValue,
+        _nullableField.rawValue,
+      ];
   @override
   bool get stringify => true;
 }
@@ -63,7 +66,9 @@ abstract class _$TestFormBodyCopyWith {
 
 // Copy With Implementation "_$TestFormBodyCopyWithImpl"
 class _$TestFormBodyCopyWithImpl implements _$TestFormBodyCopyWith {
-  const _$TestFormBodyCopyWithImpl(this._instance);
+  const _$TestFormBodyCopyWithImpl(
+    this._instance,
+  );
   final _$TestFormBody _instance;
   static const _defaultValue = Object();
   @override
@@ -73,18 +78,15 @@ class _$TestFormBodyCopyWithImpl implements _$TestFormBodyCopyWith {
     Object? nullableField = _defaultValue,
   }) {
     return TestFormBody(
-      stringField:
-          stringField == _defaultValue
-              ? _instance._stringField.rawValue
-              : stringField as String,
-      intField:
-          intField == _defaultValue
-              ? _instance._intField.rawValue
-              : intField as String,
-      nullableField:
-          nullableField == _defaultValue
-              ? _instance._nullableField.rawValue
-              : nullableField as Object?,
+      stringField: stringField == _defaultValue
+          ? _instance._stringField.rawValue
+          : stringField as String,
+      intField: intField == _defaultValue
+          ? _instance._intField.rawValue
+          : intField as String,
+      nullableField: nullableField == _defaultValue
+          ? _instance._nullableField.rawValue
+          : nullableField as Object?,
     );
   }
 }
@@ -125,10 +127,15 @@ mixin _$TestFormBodyFields {
 
 // Form Errors "TestFormErrors"
 @immutable
+
 /// The form errors for the form body "TestFormBody".
 class TestFormErrors extends FormErrors<_$TestFormBody> with EquatableMixin {
   /// The form errors for the form body "TestFormBody".
-  const TestFormErrors({this.stringField, this.intField, this.nullableField});
+  const TestFormErrors({
+    this.stringField,
+    this.intField,
+    this.nullableField,
+  });
 
   /// The error for the stringField field.
   final TestValidationError? stringField;
@@ -142,7 +149,9 @@ class TestFormErrors extends FormErrors<_$TestFormBody> with EquatableMixin {
   /// Merges this TestFormErrors with the [other]
   /// by replacing any empty fields in this instance with the corresponding field in
   /// [other] while preserving the non-empty fields in this instance.
-  TestFormErrors mergeWhereEmptyWith({required TestFormErrors other}) {
+  TestFormErrors mergeWhereEmptyWith({
+    required TestFormErrors other,
+  }) {
     return TestFormErrors(
       stringField: stringField ?? other.stringField,
       intField: intField ?? other.intField,
@@ -153,7 +162,11 @@ class TestFormErrors extends FormErrors<_$TestFormBody> with EquatableMixin {
   /// Copies this TestFormErrors and replaces the provided fields.
   _TestFormErrorsCopyWith get copyWith => _TestFormErrorsCopyWithImpl(this);
   @override
-  List<Object?> get errors => [stringField, intField, nullableField];
+  List<Object?> get errors => [
+        stringField,
+        intField,
+        nullableField,
+      ];
   @override
   List<Object?> get props => errors;
   @override
@@ -171,7 +184,9 @@ abstract class _TestFormErrorsCopyWith {
 
 // Copy With Implementation "_TestFormErrorsCopyWithImpl"
 class _TestFormErrorsCopyWithImpl implements _TestFormErrorsCopyWith {
-  const _TestFormErrorsCopyWithImpl(this._instance);
+  const _TestFormErrorsCopyWithImpl(
+    this._instance,
+  );
   final TestFormErrors _instance;
   static const _defaultValue = Object();
   @override
@@ -181,18 +196,15 @@ class _TestFormErrorsCopyWithImpl implements _TestFormErrorsCopyWith {
     Object? nullableField = _defaultValue,
   }) {
     return TestFormErrors(
-      stringField:
-          stringField == _defaultValue
-              ? _instance.stringField
-              : stringField as TestValidationError?,
-      intField:
-          intField == _defaultValue
-              ? _instance.intField
-              : intField as TestValidationError?,
-      nullableField:
-          nullableField == _defaultValue
-              ? _instance.nullableField
-              : nullableField as TestValidationError?,
+      stringField: stringField == _defaultValue
+          ? _instance.stringField
+          : stringField as TestValidationError?,
+      intField: intField == _defaultValue
+          ? _instance.intField
+          : intField as TestValidationError?,
+      nullableField: nullableField == _defaultValue
+          ? _instance.nullableField
+          : nullableField as TestValidationError?,
     );
   }
 }
