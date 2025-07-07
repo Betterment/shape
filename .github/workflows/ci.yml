@@ -104,5 +104,5 @@ jobs:
 
       - name: Verify Pub Score
         run: |
-          cd packages/${{ matrix.name }}
+          cd "packages/${{ matrix.name }}"
           ../../tool/verify_pub_score.sh
