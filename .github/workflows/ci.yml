@@ -66,6 +66,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         include: ${{ fromJson(needs.build.outputs.coverage-matrix) }}
     steps:
@@ -89,6 +90,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         include: ${{ fromJson(needs.build.outputs.coverage-matrix) }}
     steps:
