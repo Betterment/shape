@@ -53,7 +53,7 @@ jobs:
           done
           matrix_json+="]"
 
-          echo "matrix=$matrix_json" >> $GITHUB_OUTPUT
+          echo "matrix=$matrix_json" >> "$GITHUB_OUTPUT"
           echo "Generated coverage matrix: $matrix_json"
 
   check_coverage:
