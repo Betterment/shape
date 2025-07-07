@@ -37,8 +37,8 @@ jobs:
       - name: Generate Coverage Matrix
         id: coverage-matrix
         run: |
-          # Get packages that have tests (same filter as Run Tests step)
-          packages=$(melos exec --dir-exists="test" -- "echo \$MELOS_PACKAGE_NAME" | grep -v "^$")
+          # Get packages that have tests
+          packages=$(melos list --dir-exists="test")
 
           # Create JSON array of objects with name and path
           matrix_json="["
