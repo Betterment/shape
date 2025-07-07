@@ -75,7 +75,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: coverage
-          path: packages/${{ matrix.name }}/
+          path: .
 
       - name: Check Code Coverage
         uses: VeryGoodOpenSource/very_good_coverage@c953fca3e24a915e111cc6f55f03f756dcb3964c # v3
