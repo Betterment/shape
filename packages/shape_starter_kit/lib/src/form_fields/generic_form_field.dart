@@ -29,10 +29,7 @@ enum GenericValidationError {
 /// {@endtemplate}
 class GenericFormField<T> extends FormField<T, T, GenericValidationError> {
   /// {@macro generic_form_field}
-  const GenericFormField(
-    super.rawValue, {
-    this.isRequired = false,
-  });
+  const GenericFormField(super.rawValue, {this.isRequired = false});
 
   @override
   T get value => rawValue;

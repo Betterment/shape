@@ -1,8 +1,31 @@
 name: shape_workspace
 
+workspace:
+  - packages/shape
+  - packages/shape/example
+  - packages/shape_starter_kit
+  - packages/shape_generator
+
 environment:
-  sdk: '>=3.0.2 <4.0.0'
+  sdk: ^3.7.2
 
 dev_dependencies:
   lints: ^2.1.1
-  melos: ^3.1.0
+  melos: ^7.0.0-dev.8
+
+melos:
+  scripts:
+    format:
+      run: >
+        melos exec -- "find lib test -name '*.dart' -not -name '*.g.dart' -not -name '*.freezed.dart' -print0 | xargs -0 dart format"
+      description: Run the formatter for all packages in this project.
+
+    test:
+      run: >
+        melos exec --dir-exists="test" -- "dart test"
+      description: Run the formatter for all packages in this project.
+
+    codegen:
+      run: >
+        melos exec --depends-on="build_runner" -- "dart run build_runner build --delete-conflicting-outputs"
+      description: Run the codegen for all packages in this project.

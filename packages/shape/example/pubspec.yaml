@@ -4,7 +4,9 @@ version: 1.0.0
 publish_to: none
 
 environment:
-  sdk: '>=3.0.2 <4.0.0'
+  sdk: ^3.7.2
+
+resolution: workspace
 
 dependencies:
   shape: ^0.0.1

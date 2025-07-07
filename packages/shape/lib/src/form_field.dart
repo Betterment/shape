@@ -1,4 +1,4 @@
-/// {@macro form_field}
+/// {@template form_field}
 /// A container for a single form field that can be validated.
 ///
 /// The [rawValue] property is the raw input of the form field, usually a

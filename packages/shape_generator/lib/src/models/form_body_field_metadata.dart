@@ -47,8 +47,9 @@ class FormBodyFieldMetadata {
   /// Indicates if this form field extends the `FormField` class.
   bool get extendsFormField {
     return formClassMetadata.supertype != null &&
-        formClassMetadata.supertype!.nonNullableDisplayString
-            .startsWith(kFormFieldBaseClassName);
+        formClassMetadata.supertype!.nonNullableDisplayString.startsWith(
+          kFormFieldBaseClassName,
+        );
   }
 
   /// The non-nullable name of the `FormField` class instance.
@@ -69,8 +70,10 @@ class FormBodyFieldMetadata {
       return _formClassType;
     }
 
-    final resolved = formClassMetadata.instanceType!
-        .asInstanceOf(formClassMetadata.supertype!.element)!;
+    final resolved =
+        formClassMetadata.instanceType!.asInstanceOf(
+          formClassMetadata.supertype!.element,
+        )!;
     return resolved.typeArguments[0];
   }
 
@@ -83,8 +86,10 @@ class FormBodyFieldMetadata {
       return _formClassType;
     }
 
-    final resolved = formClassMetadata.instanceType!
-        .asInstanceOf(formClassMetadata.supertype!.element)!;
+    final resolved =
+        formClassMetadata.instanceType!.asInstanceOf(
+          formClassMetadata.supertype!.element,
+        )!;
     return resolved.typeArguments[1];
   }
 
@@ -97,13 +102,16 @@ class FormBodyFieldMetadata {
       return _formClassType;
     }
 
-    final resolved = formClassMetadata.instanceType!
-        .asInstanceOf(formClassMetadata.supertype!.element)!;
+    final resolved =
+        formClassMetadata.instanceType!.asInstanceOf(
+          formClassMetadata.supertype!.element,
+        )!;
     return resolved.typeArguments[2];
   }
 
   @override
-  String toString() => 'FormBodyFieldMetadata('
+  String toString() =>
+      'FormBodyFieldMetadata('
       'fieldIdentifier: $fieldIdentifier, '
       'formClassMetadata: $formClassMetadata, '
       'genericTypeArguments: $genericTypeArguments'

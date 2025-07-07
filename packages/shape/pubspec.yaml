@@ -5,7 +5,9 @@ version: 0.0.1
 repository: https://github.com/betterment/shape/tree/main/packages/shape
 
 environment:
-  sdk: '>=3.0.2 <4.0.0'
+  sdk: ^3.7.2
+
+resolution: workspace
 
 dependencies:
   equatable: ^2.0.2

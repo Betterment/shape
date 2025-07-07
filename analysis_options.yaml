@@ -1,5 +1,8 @@
 include: package:lints/recommended.yaml
 
+formatter:
+  page_width: 80
+
 linter:
   rules:
     - cascade_invocations
@@ -23,5 +26,5 @@ analyzer:
     missing_return: error
     missing_required_param: error
   exclude:
-    - 'build/**'
-    - '**/*.g.dart'
+    - "build/**"
+    - "**/*.g.dart"

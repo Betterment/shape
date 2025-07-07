@@ -44,14 +44,11 @@ void main() {
       check(nonEmptyFormErrors._errors).equals(nonEmptyFormErrors.errors);
     });
 
-    test(
-      'isNotEmpty is true when list is not empty '
-      'and contains non-null values',
-      () {
-        check(emptyFormErrors.isNotEmpty).isFalse();
-        check(nonEmptyFormErrors.isNotEmpty).isTrue();
-      },
-    );
+    test('isNotEmpty is true when list is not empty '
+        'and contains non-null values', () {
+      check(emptyFormErrors.isNotEmpty).isFalse();
+      check(nonEmptyFormErrors.isNotEmpty).isTrue();
+    });
 
     test('isEmpty is true when list is empty or only contains null values', () {
       check(emptyFormErrors.isEmpty).isTrue();

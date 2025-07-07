@@ -5,7 +5,9 @@ version: 0.0.2
 repository: https://github.com/betterment/shape/tree/main/packages/shape_generator
 
 environment:
-  sdk: '>=3.0.2 <4.0.0'
+  sdk: ^3.7.2
+
+resolution: workspace
 
 dependencies:
   analyzer: '>=5.12.0'

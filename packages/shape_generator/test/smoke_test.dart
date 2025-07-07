@@ -21,8 +21,9 @@ Future<void> main() async {
 
     testSrcFile = File(p.join(testFileDir.path, testSrcFileName));
     testOutputFile = File(p.join(testFileDir.path, testOutputFileName));
-    testExpectedOutputFile =
-        File(p.join(testFileDir.path, testExpectedOutputFileName));
+    testExpectedOutputFile = File(
+      p.join(testFileDir.path, testExpectedOutputFileName),
+    );
 
     if (!testFileDir.existsSync()) {
       throw Exception(
@@ -31,8 +32,9 @@ Future<void> main() async {
       );
     } else if (!testSrcFile.existsSync()) {
       throw Exception(
-          "Test source file does not exist at '${testSrcFile.absolute.path}'."
-          'Create it and provide the necessary files.');
+        "Test source file does not exist at '${testSrcFile.absolute.path}'."
+        'Create it and provide the necessary files.',
+      );
     } else if (!testExpectedOutputFile.existsSync()) {
       throw Exception(
         'Test expected output file does not exist at '
@@ -49,22 +51,17 @@ Future<void> main() async {
     }
 
     print('Running build_runner...');
-    final result = Process.runSync(
-      'dart',
-      [
-        'run',
-        'build_runner',
-        'build',
-        '--delete-conflicting-outputs',
-        testDir.path,
-      ],
-    );
+    final result = Process.runSync('dart', [
+      'run',
+      'build_runner',
+      'build',
+      '--delete-conflicting-outputs',
+      testDir.path,
+    ]);
     if (result.exitCode != 0) {
       print(result.stdout);
       print(result.stderr);
-      fail(
-        'build_runner failed with exit code ${result.exitCode}',
-      );
+      fail('build_runner failed with exit code ${result.exitCode}');
     }
     print('Done.');
     print('Output:');

@@ -11,4 +11,12 @@ extension StringExtensions on String {
 
   /// Returns this string with a question mark appended ("T?").
   String get nullableTypeString => appendIfNotPresent('?');
+
+  /// Removes the provided [suffix] from the string if it is present.
+  String removeIfPresent(String suffix) {
+    if (endsWith(suffix)) {
+      return substring(0, length - suffix.length);
+    }
+    return this;
+  }
 }

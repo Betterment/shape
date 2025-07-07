@@ -81,12 +81,12 @@ void main() {
             nullableField: null,
           ).validate,
         ).returnsNormally().equals(
-              const TestFormErrors(
-                stringField: TestValidationError.empty,
-                intField: TestValidationError.empty,
-                nullableField: TestValidationError.empty,
-              ),
-            );
+          const TestFormErrors(
+            stringField: TestValidationError.empty,
+            intField: TestValidationError.empty,
+            nullableField: TestValidationError.empty,
+          ),
+        );
       });
     });
 
@@ -132,8 +132,8 @@ void main() {
           nullableField: const Object(),
         ).toString,
       ).returnsNormally().equals(
-            r"_$TestFormBody(abc, 123, Instance of 'Object')",
-          );
+        r"_$TestFormBody(abc, 123, Instance of 'Object')",
+      );
     });
   });
 

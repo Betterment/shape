@@ -48,9 +48,10 @@ class ClientClassMetadata {
       isAbstract: element.isAbstract,
       isEnum: element is EnumElement,
       isMixin: element is MixinElement,
-      constructors: classVisitor.constructors
-          .where((constructor) => !constructor.isSynthetic)
-          .toList(),
+      constructors:
+          classVisitor.constructors
+              .where((constructor) => !constructor.isSynthetic)
+              .toList(),
       fields: classVisitor.fields,
       methods: classVisitor.methods,
       typeParameters: classVisitor.typeParameters,
@@ -66,7 +67,7 @@ class ClientClassMetadata {
   ///
   /// For example: `FormField<T?, T?, GenericFormFieldValidationError>`
   final InterfaceType?
-      supertype; // FormField<T?, T?, GenericFormFieldValidationError>
+  supertype; // FormField<T?, T?, GenericFormFieldValidationError>
 
   /// The instance type of the class. This is the specific type of the class
   /// with all type parameters resolved.
@@ -96,7 +97,7 @@ class ClientClassMetadata {
   final List<TypeParameterElement> typeParameters;
 
   /// The base name of the class (based on the [baseType]).
-  String get name => baseType.getDisplayString(withNullability: false);
+  String get name => baseType.getDisplayString();
 
   /// Whether this is a valid class or subclass that can be used to generate
   /// form body code.
