@@ -31,14 +31,14 @@ jobs:
       - name: Run Tests
         run: |
           dart pub global activate coverage
-          melos exec dir-exists="test" -- "dart test --coverage=coverage"
-          melos exec dir-exists="test" -- "dart pub global run coverage:format_coverage --lcov --in=coverage --out=coverage/lcov.info --report-on=lib"
+          melos exec --dir-exists="test" -- "dart test --coverage=coverage"
+          melos exec --dir-exists="test" -- "dart pub global run coverage:format_coverage --lcov --in=coverage --out=coverage/lcov.info --report-on=lib"
 
       - name: Generate Coverage Matrix
         id: coverage-matrix
         run: |
           # Get packages that have tests (same filter as Run Tests step)
-          packages=$(melos exec dir-exists="test" -- "echo \$MELOS_PACKAGE_NAME" | grep -v "^$")
+          packages=$(melos exec --dir-exists="test" -- "echo \$MELOS_PACKAGE_NAME" | grep -v "^$")
 
           # Create JSON array of objects with name and path
           matrix_json="["
