@@ -34,6 +34,12 @@ jobs:
           melos exec --dir-exists="test" -- "dart test --coverage=coverage"
           melos exec --dir-exists="test" -- "dart pub global run coverage:format_coverage --lcov --in=coverage --out=coverage/lcov.info --report-on=lib"
 
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage
+          path: packages/**/coverage/lcov.info
+
       - name: Generate Coverage Matrix
         id: coverage-matrix
         run: |
@@ -64,6 +70,12 @@ jobs:
         include: ${{ fromJson(needs.build.outputs.coverage-matrix) }}
     steps:
       - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
+
+      - name: Download Artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: coverage
+          path: packages/${{ matrix.name }}/
 
       - name: Check Code Coverage
         uses: VeryGoodOpenSource/very_good_coverage@c953fca3e24a915e111cc6f55f03f756dcb3964c # v3
