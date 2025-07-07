@@ -77,6 +77,9 @@ jobs:
           name: coverage
           path: packages/
 
+      - name: Inspect directories
+        run: ls -R packages/
+
       - name: Check Code Coverage
         uses: VeryGoodOpenSource/very_good_coverage@c953fca3e24a915e111cc6f55f03f756dcb3964c # v3
         with:
