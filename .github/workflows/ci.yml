@@ -110,4 +110,4 @@ jobs:
       - name: Verify Pub Score
         run: |
           cd "packages/${{ matrix.name }}" || exit 1
-          ../../tool/verify_pub_score.sh $(cat PANA_SCORE)
+          ../../tool/verify_pub_score.sh "$(cat PANA_SCORE)"
