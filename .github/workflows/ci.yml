@@ -104,6 +104,9 @@ jobs:
       - name: Install Dependencies
         run: melos bootstrap
 
+      - name: Install Pana
+        run: dart pub global activate pana
+
       - name: Verify Pub Score
         run: |
           cd "packages/${{ matrix.name }}"
