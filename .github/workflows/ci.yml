@@ -1,0 +1,98 @@
+name: Check Pull Request
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    outputs:
+      coverage-matrix: ${{ steps.coverage-matrix.outputs.matrix }}
+
+    steps:
+      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
+
+      - uses: dart-lang/setup-dart@e51d8e571e22473a2ddebf0ef8a2123f0ab2c02c # v1.7.1
+
+      - name: Install Melos
+        run: dart pub global activate melos
+
+      - name: Install Dependencies
+        run: melos bootstrap
+
+      - name: Format
+        run: melos run format:ci
+
+      - name: Analyze
+        run: dart analyze --fatal-infos --fatal-warnings .
+
+      - name: Run Tests
+        run: |
+          dart pub global activate coverage
+          melos exec dir-exists="test" -- "dart test --coverage=coverage"
+          melos exec dir-exists="test" -- "dart pub global run coverage:format_coverage --lcov --in=coverage --out=coverage/lcov.info --report-on=lib"
+
+      - name: Generate Coverage Matrix
+        id: coverage-matrix
+        run: |
+          # Get packages that have tests (same filter as Run Tests step)
+          packages=$(melos exec dir-exists="test" -- "echo \$MELOS_PACKAGE_NAME" | grep -v "^$")
+
+          # Create JSON array of objects with name and path
+          matrix_json="["
+          first=true
+          for package in $packages; do
+            if [ "$first" = true ]; then
+              first=false
+            else
+              matrix_json+=","
+            fi
+            matrix_json+="{\"name\":\"$package\",\"path\":\"packages/$package/coverage/lcov.info\"}"
+          done
+          matrix_json+="]"
+
+          echo "matrix=$matrix_json" >> $GITHUB_OUTPUT
+          echo "Generated coverage matrix: $matrix_json"
+
+  check_coverage:
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include: ${{ fromJson(needs.build.outputs.coverage-matrix) }}
+    steps:
+      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
+
+      - name: Check Code Coverage
+        uses: VeryGoodOpenSource/very_good_coverage@c953fca3e24a915e111cc6f55f03f756dcb3964c # v3
+        with:
+          path: ${{ matrix.path }}
+
+      # FIXME: Uncomment when we check for coverage.
+      # - name: Check Code Coverage
+      #   uses: VeryGoodOpenSource/very_good_coverage@v2
+      #   with:
+      #     path: packages/shape_generator/coverage/lcov.info
+
+  # FIXME: Uncomment once repository is public
+  # pana:
+  #   defaults:
+  #     run:
+  #       working-directory: packages/shape_generator
+
+  #   runs-on: ubuntu-latest
+
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - uses: dart-lang/setup-dart@v1
+
+  #     - name: Install Dependencies
+  #       run: |
+  #         dart pub get
+  #         dart pub global activate pana
+  #         sudo apt-get install webp
+
+  #     - name: Verify Pub Score
+  #       run: ../../tool/verify_pub_score.sh

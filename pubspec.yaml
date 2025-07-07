@@ -20,6 +20,11 @@ melos:
         melos exec -- "find lib test -name '*.dart' -not -name '*.g.dart' -not -name '*.freezed.dart' -print0 | xargs -0 dart format"
       description: Run the formatter for all packages in this project.
 
+    format:ci:
+      run: >
+        melos exec -- "find lib test -name '*.dart' -not -name '*.g.dart' -not -name '*.freezed.dart' -print0 | xargs -0 dart format --set-exit-if-changed"
+      description: Check the formatter for all packages in this project, failing if any files are not formatted.
+
     test:
       run: >
         melos exec --dir-exists="test" -- "dart test"
