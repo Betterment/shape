@@ -85,29 +85,24 @@ jobs:
         with:
           path: ${{ matrix.path }}
 
-      # FIXME: Uncomment when we check for coverage.
-      # - name: Check Code Coverage
-      #   uses: VeryGoodOpenSource/very_good_coverage@v2
-      #   with:
-      #     path: packages/shape_generator/coverage/lcov.info
+  check_pana:
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include: ${{ fromJson(needs.build.outputs.coverage-matrix) }}
+    steps:
+      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3
 
-  # FIXME: Uncomment once repository is public
-  # pana:
-  #   defaults:
-  #     run:
-  #       working-directory: packages/shape_generator
+      - uses: dart-lang/setup-dart@e51d8e571e22473a2ddebf0ef8a2123f0ab2c02c # v1.7.1
 
-  #   runs-on: ubuntu-latest
+      - name: Install Melos
+        run: dart pub global activate melos
 
-  #   steps:
-  #     - uses: actions/checkout@v3
-  #     - uses: dart-lang/setup-dart@v1
+      - name: Install Dependencies
+        run: melos bootstrap
 
-  #     - name: Install Dependencies
-  #       run: |
-  #         dart pub get
-  #         dart pub global activate pana
-  #         sudo apt-get install webp
-
-  #     - name: Verify Pub Score
-  #       run: ../../tool/verify_pub_score.sh
+      - name: Verify Pub Score
+        run: |
+          cd packages/${{ matrix.name }}
+          ../../tool/verify_pub_score.sh
