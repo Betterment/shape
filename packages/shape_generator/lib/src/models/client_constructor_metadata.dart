@@ -28,8 +28,8 @@ class ClientConstructorMetadata {
   final ReturnStatement? returnStatement;
 
   GeneratedClassNames get _classNames => GeneratedClassNames(
-        formBodyClassName: enclosingClass.nonNullableDisplayString,
-      );
+    formBodyClassName: enclosingClass.nonNullableDisplayString,
+  );
 
   /// The return type of the return statement.
   SimpleIdentifier get returnStatementType {

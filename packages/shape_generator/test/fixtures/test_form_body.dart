@@ -12,15 +12,9 @@ abstract class TestFormBody extends FormBody<TestFormErrors>
     required Object? nullableField,
   }) {
     return _$TestFormBody(
-      stringField: NonEmptyStringFormField(
-        rawValue: stringField,
-      ),
-      intField: ValidIntFormField(
-        rawValue: intField,
-      ),
-      nullableField: NullableFormField<Object?>(
-        rawValue: nullableField,
-      ),
+      stringField: NonEmptyStringFormField(rawValue: stringField),
+      intField: ValidIntFormField(rawValue: intField),
+      nullableField: NullableFormField<Object?>(rawValue: nullableField),
     );
   }
 
@@ -31,9 +25,7 @@ enum TestValidationError { empty }
 
 class NonEmptyStringFormField
     extends FormField<String, String, TestValidationError> {
-  NonEmptyStringFormField({
-    required String rawValue,
-  }) : super(rawValue);
+  NonEmptyStringFormField({required String rawValue}) : super(rawValue);
 
   @override
   String get value => rawValue;
@@ -49,9 +41,7 @@ class NonEmptyStringFormField
 }
 
 class ValidIntFormField extends FormField<String, int?, TestValidationError> {
-  ValidIntFormField({
-    required String rawValue,
-  }) : super(rawValue);
+  ValidIntFormField({required String rawValue}) : super(rawValue);
 
   @override
   int? get value => int.tryParse(rawValue);
@@ -67,9 +57,7 @@ class ValidIntFormField extends FormField<String, int?, TestValidationError> {
 }
 
 class NullableFormField<T> extends FormField<T?, T?, TestValidationError> {
-  NullableFormField({
-    required T rawValue,
-  }) : super(rawValue);
+  NullableFormField({required T rawValue}) : super(rawValue);
 
   @override
   T? get value => rawValue;

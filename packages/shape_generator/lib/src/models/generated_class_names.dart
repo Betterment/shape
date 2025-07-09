@@ -7,9 +7,7 @@ import 'package:shape_generator/src/models/models.dart';
 /// {@endtemplate}
 class GeneratedClassNames extends Equatable {
   /// {@macro generated_class_names}
-  const GeneratedClassNames({
-    required this.formBodyClassName,
-  });
+  const GeneratedClassNames({required this.formBodyClassName});
 
   /// The name of the form body class the generator is currently parsing.
   final String formBodyClassName;

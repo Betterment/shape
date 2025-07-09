@@ -12,8 +12,8 @@ class FunctionParameter {
     required this.name,
     this.defaultValue,
     this.isRequired = false,
-  })  : assert(name.length > 0),
-        assert(type.length > 0);
+  }) : assert(name.length > 0),
+       assert(type.length > 0);
 
   /// The type of the parameter.
   final String type;
@@ -42,9 +42,8 @@ class FunctionParameter {
 @immutable
 class SourceBuffer {
   /// {@macro source_buffer}
-  SourceBuffer([
-    @visibleForTesting StringBuffer? buffer,
-  ]) : _buffer = buffer ?? StringBuffer();
+  SourceBuffer([@visibleForTesting StringBuffer? buffer])
+    : _buffer = buffer ?? StringBuffer();
 
   final StringBuffer _buffer;
 
@@ -80,8 +79,9 @@ class SourceBuffer {
       return;
     }
 
-    final lines =
-        _removeEmptyLeadingAndTrailingLines(documentation.split('\n'));
+    final lines = _removeEmptyLeadingAndTrailingLines(
+      documentation.split('\n'),
+    );
 
     for (var line in lines) {
       if (line.trim().isEmpty) {
@@ -139,9 +139,10 @@ class SourceBuffer {
     } else {
       _writeln('$returnType $functionName({');
       for (final parameter in parameters) {
-        final defaultValueClause = parameter.defaultValue == null
-            ? ''
-            : ' = ${parameter.defaultValue}';
+        final defaultValueClause =
+            parameter.defaultValue == null
+                ? ''
+                : ' = ${parameter.defaultValue}';
         if (parameter.isRequired) {
           _writeln(
             '''$_required ${parameter.type} ${parameter.name}$defaultValueClause,''',
@@ -235,8 +236,9 @@ class SourceBuffer {
 
     final fullConstructorName =
         constructorName.isEmpty ? className : '$className.$constructorName';
-    final privateInstanceParameterNames =
-        parameters.map((p) => 'this.${p.name},');
+    final privateInstanceParameterNames = parameters.map(
+      (p) => 'this.${p.name},',
+    );
     if (!useNamedParameters) {
       if (useConstConstructor) {
         _writeln(

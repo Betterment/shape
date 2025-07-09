@@ -30,7 +30,8 @@ class FormErrorsGenerator with SourceGenerator {
       )
       ..writeImmutableAnnotation()
       ..writeClassDeclarationStart(
-        documentation: 'The form errors for the form body '
+        documentation:
+            'The form errors for the form body '
             '"${generatedClassNames.formBodyClassName}".',
         name: generatedClassNames.generatedFormErrorsClassName,
         extendedClass:
@@ -38,7 +39,8 @@ class FormErrorsGenerator with SourceGenerator {
         mixins: ['EquatableMixin'],
       )
       ..writeClassConstructor(
-        documentation: 'The form errors for the form body '
+        documentation:
+            'The form errors for the form body '
             '"${generatedClassNames.formBodyClassName}".',
         className: generatedClassNames.generatedFormErrorsClassName,
         constructorName: '',
@@ -65,7 +67,7 @@ class FormErrorsGenerator with SourceGenerator {
 
     final mergeWhereEmptyWithFields = [
       for (final field in fields)
-        '''${field.fieldIdentifier.name}: ${field.fieldIdentifier.name} ?? other.${field.fieldIdentifier.name},'''
+        '''${field.fieldIdentifier.name}: ${field.fieldIdentifier.name} ?? other.${field.fieldIdentifier.name},''',
     ];
     buffer
       ..writeSingleReturnFunction(
@@ -126,8 +128,11 @@ Copies this ${generatedClassNames.generatedFormErrorsClassName} and replaces the
         parameters: [
           for (final field in fields)
             FunctionParameter(
-              type: field.errorType.potentiallyNullableDisplayString
-                  .nullableTypeString,
+              type:
+                  field
+                      .errorType
+                      .potentiallyNullableDisplayString
+                      .nullableTypeString,
               name: field.fieldIdentifier.name,
               isRequired: false,
             ),
@@ -140,7 +145,7 @@ Copies this ${generatedClassNames.generatedFormErrorsClassName} and replaces the
       ..writeClassDeclarationStart(
         name: generatedClassNames.generatedErrorsCopyWithImplClassName,
         implementedInterfaces: [
-          generatedClassNames.generatedErrorsCopyWithClassName
+          generatedClassNames.generatedErrorsCopyWithClassName,
         ],
       )
       ..writeClassConstructor(
@@ -156,10 +161,7 @@ Copies this ${generatedClassNames.generatedFormErrorsClassName} and replaces the
         type: generatedClassNames.generatedFormErrorsClassName,
         name: '_instance',
       )
-      ..writeStaticConstClassField(
-        name: '_defaultValue',
-        value: 'Object()',
-      );
+      ..writeStaticConstClassField(name: '_defaultValue', value: 'Object()');
 
     final copyWithFields = [
       for (final field in fields)

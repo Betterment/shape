@@ -6,10 +6,7 @@ part 'example_form_body.g.dart';
 @GenerateFormBody()
 abstract class ExampleFormBody extends FormBody<ExampleFormErrors>
     with _$ExampleFormBodyFields {
-  factory ExampleFormBody({
-    required String? name,
-    int? age,
-  }) {
+  factory ExampleFormBody({required String? name, int? age}) {
     return _$ExampleFormBody(
       name: GenericFormField(name, isRequired: true),
       age: GenericFormField(age),

@@ -1,8 +1,7 @@
 import 'package:analyzer/dart/element/type.dart';
-import 'package:checks/checks.dart';
 import 'package:shape_generator/src/extensions/extensions.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:test/test.dart' hide expect;
+import 'package:test/test.dart';
 
 class MockType extends Mock implements DartType {}
 
@@ -20,61 +19,61 @@ void main() {
     group('nonNullableDisplayString', () {
       group('on a non-nullable type', () {
         setUp(() {
-          when(
-            () => type.getDisplayString(
-              withNullability: any(named: 'withNullability'),
-            ),
-          ).thenReturn(typeDisplayString);
+          when(() => type.getDisplayString()).thenReturn(typeDisplayString);
         });
 
         test('returns type without question mark', () {
-          check(type.nonNullableDisplayString).equals(typeDisplayString);
+          expect(type.nonNullableDisplayString, typeDisplayString);
         });
       });
 
       group('on a nullable type', () {
         setUp(() {
-          when(
-            () => type.getDisplayString(
-              withNullability: captureAny(named: 'withNullability'),
-            ),
-          ).thenAnswer(
-            (invocation) {
-              final withNullability = invocation
-                  .namedArguments[const Symbol('withNullability')] as bool;
-              return withNullability
-                  ? nullableTypeDisplayString
-                  : typeDisplayString;
-            },
-          );
+          when(() => type.getDisplayString()).thenAnswer((invocation) {
+            final withNullability =
+                invocation.namedArguments[const Symbol('withNullability')]
+                    as bool;
+            return withNullability
+                ? nullableTypeDisplayString
+                : typeDisplayString;
+          });
         });
 
         test('returns type without question mark', () {
-          check(type.nonNullableDisplayString).equals(typeDisplayString);
+          expect(type.nonNullableDisplayString, typeDisplayString);
         });
       });
     });
 
     group('potentiallyNullableDisplayString', () {
-      setUp(() {
-        when(
-          () => type.getDisplayString(
-            withNullability: captureAny(named: 'withNullability'),
-          ),
-        ).thenAnswer(
-          (invocation) {
-            final withNullability = invocation
-                .namedArguments[const Symbol('withNullability')] as bool;
+      group('without a null-safe context', () {
+        setUp(() {
+          when(() => type.getDisplayString()).thenReturn(typeDisplayString);
+        });
+
+        test('returns type without question mark', () {
+          expect(type.potentiallyNullableDisplayString, typeDisplayString);
+        });
+      });
+
+      group('with a null-safe context on a nullable type', () {
+        setUp(() {
+          when(() => type.getDisplayString()).thenAnswer((invocation) {
+            final withNullability =
+                invocation.namedArguments[const Symbol('withNullability')]
+                    as bool;
             return withNullability
                 ? nullableTypeDisplayString
                 : typeDisplayString;
-          },
-        );
-      });
+          });
+        });
 
-      test('returns type with question mark', () {
-        check(type.potentiallyNullableDisplayString)
-            .equals(nullableTypeDisplayString);
+        test('returns type with question mark', () {
+          expect(
+            type.potentiallyNullableDisplayString,
+            nullableTypeDisplayString,
+          );
+        });
       });
     });
   });

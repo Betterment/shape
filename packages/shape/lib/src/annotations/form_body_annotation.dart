@@ -10,9 +10,8 @@ import 'package:meta/meta.dart';
 @immutable
 class GenerateFormBody extends Equatable {
   /// {@macro generate_form_body}
-  const GenerateFormBody({
-    bool? generateFormErrors,
-  }) : generateFormErrors = generateFormErrors ?? true;
+  const GenerateFormBody({bool? generateFormErrors})
+    : generateFormErrors = generateFormErrors ?? true;
 
   /// Indicates if `shape_generator` should generate a `FormErrors` class.
   final bool generateFormErrors;

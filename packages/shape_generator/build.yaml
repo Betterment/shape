@@ -6,10 +6,10 @@ targets:
 
 builders:
   shape:
-    target: ':shape_generator'
-    import: 'package:shape_generator/builder.dart'
-    builder_factories: ['shape']
-    build_extensions: { '.dart': ['.shape.g.part'] }
+    target: ":shape_generator"
+    import: "package:shape_generator/builder.dart"
+    builder_factories: ["shape"]
+    build_extensions: { ".dart": [".shape.g.part"] }
     auto_apply: dependents
     build_to: cache
-    applies_builders: ['source_gen|combining_builder']
+    applies_builders: ["source_gen|combining_builder"]

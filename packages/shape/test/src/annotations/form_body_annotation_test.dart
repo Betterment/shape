@@ -4,12 +4,8 @@ import 'package:test/test.dart' hide expect;
 
 void main() {
   group('GenerateFormBody annotation', () {
-    GenerateFormBody buildSubject({
-      bool? generateFormErrors,
-    }) {
-      return GenerateFormBody(
-        generateFormErrors: generateFormErrors,
-      );
+    GenerateFormBody buildSubject({bool? generateFormErrors}) {
+      return GenerateFormBody(generateFormErrors: generateFormErrors);
     }
 
     test('can be constructed', () {
@@ -19,9 +15,7 @@ void main() {
     test('has correct props', () {
       final subject = buildSubject();
 
-      check(subject.props).deepEquals([
-        subject.generateFormErrors,
-      ]);
+      check(subject.props).deepEquals([subject.generateFormErrors]);
     });
   });
 }

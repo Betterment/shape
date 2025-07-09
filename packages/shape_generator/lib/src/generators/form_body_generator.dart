@@ -52,7 +52,7 @@ class FormBodyGenerator with SourceGenerator {
         extendedClass: generatedClassNames.formBodyClassName,
         mixins: [
           generatedClassNames.generatedFormBodyFieldsMixinName,
-          'EquatableMixin'
+          'EquatableMixin',
         ],
       )
       ..writeClassFactoryConstructor(
@@ -108,7 +108,7 @@ class FormBodyGenerator with SourceGenerator {
         );
     final enclosingClassOverridesValidateMethod =
         enclosingClassValidateMethod != null &&
-            !enclosingClassValidateMethod.isAbstract;
+        !enclosingClassValidateMethod.isAbstract;
 
     if (!enclosingClassOverridesValidateMethod) {
       final validationFields = fields
@@ -117,7 +117,8 @@ class FormBodyGenerator with SourceGenerator {
       buffer.writeSingleReturnFunction(
         returnType: generatedClassNames.generatedFormErrorsClassName,
         functionName: kValidateMethodName,
-        returnValue: '${generatedClassNames.generatedFormErrorsClassName}'
+        returnValue:
+            '${generatedClassNames.generatedFormErrorsClassName}'
             '(${validationFields.map((f) => '$f: _$f.validate(),').join()})',
         isOverride: true,
       );
@@ -184,10 +185,7 @@ class FormBodyGenerator with SourceGenerator {
         type: generatedClassNames.generatedFormBodyClassName,
         name: '_instance',
       )
-      ..writeStaticConstClassField(
-        name: '_defaultValue',
-        value: 'Object()',
-      );
+      ..writeStaticConstClassField(name: '_defaultValue', value: 'Object()');
 
     final fieldNames = fields.map((f) => f.fieldIdentifier.name);
     final copyWithFields = [

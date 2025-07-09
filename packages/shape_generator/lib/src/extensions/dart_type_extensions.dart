@@ -1,4 +1,5 @@
 import 'package:analyzer/dart/element/type.dart';
+import 'package:shape_generator/src/extensions/extensions.dart';
 
 /// Extensions on [DartType] for convenience.
 extension DartTypeExtensions on DartType {
@@ -9,7 +10,7 @@ extension DartTypeExtensions on DartType {
   /// DartType(String?).nonNullableDisplayString; // "String"
   /// ```
   String get nonNullableDisplayString =>
-      getDisplayString(withNullability: false);
+      getDisplayString().removeIfPresent('?');
 
   /// The potentially nullable display string of this type.
   ///
@@ -21,6 +22,6 @@ extension DartTypeExtensions on DartType {
   /// DartType(String?).potentiallyNullableDisplayString; // "String"
   /// ```
   String get potentiallyNullableDisplayString {
-    return getDisplayString(withNullability: true);
+    return getDisplayString();
   }
 }
