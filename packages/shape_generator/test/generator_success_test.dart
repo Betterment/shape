@@ -75,8 +75,8 @@ $genericFormFieldSource
       );
 
       check(result.succeeded).isTrue();
-      // Custom wrappers become typed factory params; the call site expression is
-      // not re-emitted into the generated factory body.
+      // Custom wrappers become typed factory params; the call site expression
+      // is not re-emitted into the generated factory body.
       check(
         result.generated!,
       ).contains('required GenericFormField<String?> name');
@@ -150,6 +150,14 @@ class TrimmedStringFormField extends SimpleFormField<String?, Object?> {
       // requireNames is only used when constructing wrappers in the user
       // factory; it must not become a generated form field.
       check(result.generated!.contains('requireNames')).isFalse();
+      // copyWith must call the generated factory with FormField instances so
+      // user-factory-only params like requireNames are not required.
+      check(
+        result.generated!,
+      ).contains('_\$OptionalRawCustomWrapperFormBody(');
+      check(result.generated!).contains(
+        '? _instance._firstName : firstName as TrimmedStringFormField',
+      );
     });
 
     test('supports redirecting factory constructors', () async {

@@ -60,9 +60,9 @@ class _$TestFormBody extends TestFormBody {
 // Copy With Interface "_$TestFormBodyCopyWith"
 abstract class _$TestFormBodyCopyWith {
   TestFormBody call({
-    String stringField,
-    String intField,
-    Object? nullableField,
+    NonEmptyStringFormField stringField,
+    ValidIntFormField intField,
+    NullableFormField<Object?> nullableField,
   });
 }
 
@@ -77,16 +77,16 @@ class _$TestFormBodyCopyWithImpl implements _$TestFormBodyCopyWith {
     Object? intField = _defaultValue,
     Object? nullableField = _defaultValue,
   }) {
-    return TestFormBody(
+    return _$TestFormBody(
       stringField: stringField == _defaultValue
-          ? _instance._stringField.rawValue
-          : stringField as String,
+          ? _instance._stringField
+          : stringField as NonEmptyStringFormField,
       intField: intField == _defaultValue
-          ? _instance._intField.rawValue
-          : intField as String,
+          ? _instance._intField
+          : intField as ValidIntFormField,
       nullableField: nullableField == _defaultValue
-          ? _instance._nullableField.rawValue
-          : nullableField as Object?,
+          ? _instance._nullableField
+          : nullableField as NullableFormField<Object?>,
     );
   }
 }

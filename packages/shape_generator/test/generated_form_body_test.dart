@@ -97,7 +97,9 @@ void main() {
           intField: '123',
           nullableField: const Object(),
         );
-        final actual = subject.copyWith(stringField: 'def');
+        final actual = subject.copyWith(
+          stringField: NonEmptyStringFormField(rawValue: 'def'),
+        );
         final checked = buildSubject(
           stringField: 'def',
           intField: '123',
@@ -113,7 +115,9 @@ void main() {
           intField: '123',
           nullableField: 'xyz',
         );
-        final actual = subject.copyWith(nullableField: null);
+        final actual = subject.copyWith(
+          nullableField: NullableFormField<Object?>(rawValue: null),
+        );
         final checked = buildSubject(
           stringField: 'abc',
           intField: '123',

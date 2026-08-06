@@ -57,7 +57,7 @@ class _$ExampleFormBodyCopyWithImpl implements _$ExampleFormBodyCopyWith {
     Object? name = _defaultValue,
     Object? age = _defaultValue,
   }) {
-    return ExampleFormBody(
+    return _$ExampleFormBody(
       name: name == _defaultValue ? _instance._name.rawValue : name as String?,
       age: age == _defaultValue ? _instance._age.rawValue : age as int?,
     );

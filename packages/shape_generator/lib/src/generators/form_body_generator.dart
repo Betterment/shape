@@ -155,7 +155,7 @@ class FormBodyGenerator with SourceGenerator {
         parameters: [
           for (final field in fields)
             FunctionParameter(
-              type: field.rawValueType.potentiallyNullableDisplayString,
+              type: _copyWithParameterType(field),
               name: field.fieldName,
               isRequired: false,
             ),
@@ -187,9 +187,7 @@ class FormBodyGenerator with SourceGenerator {
 
     final fieldNames = fields.map((f) => f.fieldName);
     final copyWithFields = [
-      for (final field in fields)
-        '''
-${field.fieldName}: ${field.fieldName} == _defaultValue ? _instance._${_getRawValue(field)} : ${field.fieldName} as ${field.rawValueType.potentiallyNullableDisplayString},''',
+      for (final field in fields) _copyWithArgument(field),
     ];
 
     buffer
@@ -204,10 +202,33 @@ ${field.fieldName}: ${field.fieldName} == _defaultValue ? _instance._${_getRawVa
               defaultValue: '_defaultValue',
             ),
         ],
+        // Always call the generated factory so extra user-factory-only params
+        // (e.g. construction flags) are not required.
         returnValue:
-            '''${generatedClassNames.formBodyClassName}(${copyWithFields.join()})''',
+            '''${generatedClassNames.generatedFormBodyClassName}(${copyWithFields.join()})''',
         isOverride: true,
       )
       ..writeClassDeclarationEnd();
+  }
+
+  /// copyWith accepts FormField instances for custom wrappers and raw values
+  /// for inferred wrappers.
+  String _copyWithParameterType(FormBodyFieldMetadata field) {
+    if (field.isCustomWrapper) {
+      return field.formClassName;
+    }
+    return field.rawValueType.potentiallyNullableDisplayString;
+  }
+
+  String _copyWithArgument(FormBodyFieldMetadata field) {
+    final name = field.fieldName;
+    if (field.isCustomWrapper) {
+      return '''
+$name: $name == _defaultValue ? _instance._$name : $name as ${field.formClassName},''';
+    }
+
+    final rawType = field.rawValueType.potentiallyNullableDisplayString;
+    return '''
+$name: $name == _defaultValue ? _instance._${_getRawValue(field)} : $name as $rawType,''';
   }
 }
