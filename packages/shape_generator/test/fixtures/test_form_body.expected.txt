@@ -6,6 +6,7 @@ part of 'test_form_body.dart';
 // ShapeGenerator
 // **************************************************************************
 
+// ignore_for_file: unused_element, cast_nullable_to_non_nullable, prefer_const_constructors_in_immutables
 // Form Body "_$TestFormBody"
 @immutable
 class _$TestFormBody extends TestFormBody {
@@ -16,7 +17,7 @@ class _$TestFormBody extends TestFormBody {
   }) {
     return _$TestFormBody._(stringField, intField, nullableField);
   }
-  _$TestFormBody._(this._stringField, this._intField, this._nullableField)
+  const _$TestFormBody._(this._stringField, this._intField, this._nullableField)
     : super._();
   @override
   final NonEmptyStringFormField _stringField;
@@ -80,13 +81,13 @@ class _$TestFormBodyCopyWithImpl implements _$TestFormBodyCopyWith {
     return _$TestFormBody(
       stringField: stringField == _defaultValue
           ? _instance._stringField
-          : stringField as NonEmptyStringFormField,
+          : stringField! as NonEmptyStringFormField,
       intField: intField == _defaultValue
           ? _instance._intField
-          : intField as ValidIntFormField,
+          : intField! as ValidIntFormField,
       nullableField: nullableField == _defaultValue
           ? _instance._nullableField
-          : nullableField as NullableFormField<Object?>,
+          : nullableField! as NullableFormField<Object?>,
     );
   }
 }

@@ -6,6 +6,7 @@ part of 'example_form_body.dart';
 // ShapeGenerator
 // **************************************************************************
 
+// ignore_for_file: unused_element, cast_nullable_to_non_nullable, prefer_const_constructors_in_immutables
 // Form Body "_$ExampleFormBody"
 @immutable
 class _$ExampleFormBody extends ExampleFormBody {
@@ -15,7 +16,7 @@ class _$ExampleFormBody extends ExampleFormBody {
       GenericFormField<int?>(age),
     );
   }
-  _$ExampleFormBody._(this._name, this._age) : super._();
+  const _$ExampleFormBody._(this._name, this._age) : super._();
   @override
   final GenericFormField<String?> _name;
   @override

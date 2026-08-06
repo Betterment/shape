@@ -85,7 +85,7 @@ class FormBodyGenerator with SourceGenerator {
               name: '_${field.fieldName}',
             ),
         ],
-        useConstConstructor: false,
+        useConstConstructor: true,
         useNamedParameters: false,
         supertypeConstructorName: '_',
       );
@@ -224,11 +224,12 @@ class FormBodyGenerator with SourceGenerator {
     final name = field.fieldName;
     if (field.isCustomWrapper) {
       return '''
-$name: $name == _defaultValue ? _instance._$name : $name as ${field.formClassName},''';
+$name: $name == _defaultValue ? _instance._$name : $name! as ${field.formClassName},''';
     }
 
     final rawType = field.rawValueType.potentiallyNullableDisplayString;
+    final cast = rawType.endsWith('?') ? 'as $rawType' : '! as $rawType';
     return '''
-$name: $name == _defaultValue ? _instance._${_getRawValue(field)} : $name as $rawType,''';
+$name: $name == _defaultValue ? _instance._${_getRawValue(field)} : $name $cast,''';
   }
 }

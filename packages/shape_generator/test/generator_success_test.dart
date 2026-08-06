@@ -156,7 +156,10 @@ class TrimmedStringFormField extends SimpleFormField<String?, Object?> {
         result.generated!,
       ).contains('_\$OptionalRawCustomWrapperFormBody(');
       check(result.generated!).contains(
-        '? _instance._firstName : firstName as TrimmedStringFormField',
+        '? _instance._firstName : firstName! as TrimmedStringFormField',
+      );
+      check(result.generated!).contains(
+        'ignore_for_file: unused_element',
       );
     });
 

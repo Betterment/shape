@@ -36,7 +36,12 @@ class ShapeGenerator extends GeneratorForAnnotation<GenerateFormBody> {
       formBodyClassName: classMetadata.name,
     );
 
-    final buffer = SourceBuffer();
+    final buffer = SourceBuffer()
+      ..writeComment(
+        'ignore_for_file: unused_element, '
+        'cast_nullable_to_non_nullable, '
+        'prefer_const_constructors_in_immutables',
+      );
 
     try {
       FormBodyGenerator(
