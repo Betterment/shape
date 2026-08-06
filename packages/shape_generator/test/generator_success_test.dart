@@ -60,5 +60,59 @@ $genericFormFieldSource
       check(result.succeeded).isTrue();
       check(result.generated!.contains('class NoErrorsErrors')).isFalse();
     });
+
+    test('preserves explicit custom FormField wrappers', () async {
+      final result = await runShapeGenerator(
+        source: validFormBodySource(
+          className: 'CustomWrapperFormBody',
+          factoryParams: 'required String? name',
+          factoryBody: '''
+    return _\$CustomWrapperFormBody(
+      name: GenericFormField(name, isRequired: true),
+    );''',
+        ),
+        className: 'CustomWrapperFormBody',
+      );
+
+      check(result.succeeded).isTrue();
+      // Custom wrappers become typed factory params; the call site expression is
+      // not re-emitted into the generated factory body.
+      check(result.generated!).contains(
+        'required GenericFormField<String?> name',
+      );
+      check(
+        result.generated!.contains(
+          'GenericFormField<String?>(name, isRequired: true)',
+        ),
+      ).isFalse();
+    });
+
+    test('supports redirecting factory constructors', () async {
+      final result = await runShapeGenerator(
+        source:
+            '''
+import 'package:shape/shape.dart';
+import 'package:shape_starter_kit/shape_starter_kit.dart';
+
+part 'form_body.g.dart';
+
+@GenerateFormBody()
+abstract class RedirectFormBody extends FormBody with _\$RedirectFormBodyFields {
+  const RedirectFormBody._();
+
+  factory RedirectFormBody({@FieldRequired() String? name}) = _\$RedirectFormBody;
+}
+
+$genericFormFieldSource
+''',
+        className: 'RedirectFormBody',
+      );
+
+      check(result.succeeded).isTrue();
+      check(result.generated!).contains('class _\$RedirectFormBody');
+      check(result.generated!).contains(
+        'GenericFormField<String?>(name, isRequired: true)',
+      );
+    });
   });
 }

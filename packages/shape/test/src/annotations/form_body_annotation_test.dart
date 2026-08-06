@@ -17,5 +17,20 @@ void main() {
 
       check(subject).equals(const GenerateFormBody(generateFormErrors: true));
     });
+
+    test('hashCode matches generateFormErrors', () {
+      check(
+        buildSubject(generateFormErrors: true).hashCode,
+      ).equals(true.hashCode);
+      check(
+        buildSubject(generateFormErrors: false).hashCode,
+      ).equals(false.hashCode);
+    });
+  });
+
+  group('FieldRequired annotation', () {
+    test('can be constructed', () {
+      check(() => const FieldRequired()).returnsNormally().isA<FieldRequired>();
+    });
   });
 }

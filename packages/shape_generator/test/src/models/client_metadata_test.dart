@@ -1,4 +1,5 @@
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:build/build.dart';
 import 'package:build_test/build_test.dart';
@@ -76,6 +77,8 @@ abstract class SampleFormBody extends FormBody with _\$SampleFormBodyFields {
             ),
           ).isTrue();
           check(metadata.constructors.any((c) => c.isFactory)).isTrue();
+          check(metadata.isValid).isTrue();
+          check(metadata.toString()).contains('isAbstract: true');
         },
         packageConfig: await workspacePackageConfigForTests(),
         readAllSourcesFromFilesystem: true,
@@ -89,6 +92,10 @@ abstract class SampleFormBody extends FormBody with _\$SampleFormBodyFields {
     setUp(() {
       enclosingClass = MockInterfaceType();
       when(() => enclosingClass.nonNullableDisplayString).thenReturn('Foo');
+      when(() => enclosingClass.nullabilitySuffix).thenReturn(
+        NullabilitySuffix.none,
+      );
+      when(() => enclosingClass.getDisplayString()).thenReturn('Foo');
     });
 
     test('treats unnamed constructors as new', () {
@@ -112,6 +119,21 @@ abstract class SampleFormBody extends FormBody with _\$SampleFormBodyFields {
       );
 
       check(metadata.isUnnamed).isTrue();
+    });
+
+    test('uses redirectTargetName for return expression type', () {
+      final metadata = ClientConstructorMetadata(
+        name: 'new',
+        enclosingClass: enclosingClass,
+        isFactory: true,
+        returnExpression: null,
+        redirectTargetName: '_\$Foo',
+      );
+
+      check(metadata.returnExpressionTypeName).equals('_\$Foo');
+      check(metadata.hasValidReturnStatementType).isTrue();
+      check(metadata.isValid).isTrue();
+      check(metadata.toString()).contains('returnExpressionTypeName: _\$Foo');
     });
   });
 }
