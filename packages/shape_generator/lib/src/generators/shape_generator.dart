@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:build/build.dart';
 import 'package:shape/shape.dart';
@@ -562,7 +563,11 @@ Instance type arguments found: "$instanceTypeArguments" (length ${instanceTypeAr
       formClassMetadata: formFieldClassMetadata,
       wrapperExpression: argumentExpression.toSource(),
       isCustomWrapper: true,
-      isFactoryParameterRequired: factoryParameter.isRequired,
+      // Non-nullable FormField params are required here.
+      isFactoryParameterRequired:
+          factoryParameter.isRequired ||
+          formFieldExpressionType!.nullabilitySuffix !=
+              NullabilitySuffix.question,
       genericTypeArguments: {
         for (var i = 0; i < formFieldClassMetadata.typeParameters.length; i++)
           formFieldClassMetadata.typeParameters[i]: instanceTypeArguments[i],
