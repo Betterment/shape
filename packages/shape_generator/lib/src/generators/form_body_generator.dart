@@ -23,7 +23,7 @@ class FormBodyGenerator with SourceGenerator {
   final List<FormBodyFieldMetadata> fields;
 
   String _getValue(FormBodyFieldMetadata field) {
-    final name = field.fieldIdentifier.name;
+    final name = field.fieldName;
     if (!field.extendsFormField) {
       return name;
     } else {
@@ -32,7 +32,7 @@ class FormBodyGenerator with SourceGenerator {
   }
 
   String _getRawValue(FormBodyFieldMetadata field) {
-    final name = field.fieldIdentifier.name;
+    final name = field.fieldName;
     if (!field.extendsFormField) {
       return name;
     } else {
@@ -52,7 +52,7 @@ class FormBodyGenerator with SourceGenerator {
         extendedClass: generatedClassNames.formBodyClassName,
         mixins: [
           generatedClassNames.generatedFormBodyFieldsMixinName,
-          'EquatableMixin',
+          'Equatable',
         ],
       )
       ..writeClassFactoryConstructor(
@@ -63,7 +63,7 @@ class FormBodyGenerator with SourceGenerator {
           for (final field in fields)
             FunctionParameter(
               type: field.formClassName,
-              name: field.fieldIdentifier.name,
+              name: field.fieldName,
               isRequired: true,
             ),
         ],
@@ -75,7 +75,7 @@ class FormBodyGenerator with SourceGenerator {
           for (final field in fields)
             FunctionParameter(
               type: field.formClassName,
-              name: '_${field.fieldIdentifier.name}',
+              name: '_${field.fieldName}',
             ),
         ],
         useConstConstructor: true,
@@ -88,13 +88,13 @@ class FormBodyGenerator with SourceGenerator {
       buffer
         ..writeClassField(
           type: field.formClassName,
-          name: '_${field.fieldIdentifier.name}',
+          name: '_${field.fieldName}',
           isFinal: true,
           isOverride: true,
         )
         ..writeClassGetter(
           type: field.valueType.potentiallyNullableDisplayString,
-          name: field.fieldIdentifier.name,
+          name: field.fieldName,
           value: '_${_getValue(field)}',
           isOverride: true,
         );
@@ -113,7 +113,7 @@ class FormBodyGenerator with SourceGenerator {
     if (!enclosingClassOverridesValidateMethod) {
       final validationFields = fields
           .where((f) => f.extendsFormField)
-          .map((f) => f.fieldIdentifier.name);
+          .map((f) => f.fieldName);
       buffer.writeSingleReturnFunction(
         returnType: generatedClassNames.generatedFormErrorsClassName,
         functionName: kValidateMethodName,
@@ -158,7 +158,7 @@ class FormBodyGenerator with SourceGenerator {
           for (final field in fields)
             FunctionParameter(
               type: field.rawValueType.potentiallyNullableDisplayString,
-              name: field.fieldIdentifier.name,
+              name: field.fieldName,
               isRequired: false,
             ),
         ],
@@ -187,11 +187,11 @@ class FormBodyGenerator with SourceGenerator {
       )
       ..writeStaticConstClassField(name: '_defaultValue', value: 'Object()');
 
-    final fieldNames = fields.map((f) => f.fieldIdentifier.name);
+    final fieldNames = fields.map((f) => f.fieldName);
     final copyWithFields = [
       for (final field in fields)
         '''
-${field.fieldIdentifier.name}: ${field.fieldIdentifier.name} == _defaultValue ? _instance._${_getRawValue(field)} : ${field.fieldIdentifier.name} as ${field.rawValueType.potentiallyNullableDisplayString},''',
+${field.fieldName}: ${field.fieldName} == _defaultValue ? _instance._${_getRawValue(field)} : ${field.fieldName} as ${field.rawValueType.potentiallyNullableDisplayString},''',
     ];
 
     buffer

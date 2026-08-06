@@ -1,4 +1,3 @@
-import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:shape_generator/src/extensions/extensions.dart';
@@ -10,7 +9,7 @@ import 'package:shape_generator/src/models/models.dart';
 class FormBodyFieldMetadata {
   /// {@macro form_body_field_metadata}
   const FormBodyFieldMetadata({
-    required this.fieldIdentifier,
+    required this.fieldName,
     required this.formClassMetadata,
     this.genericTypeArguments = const {},
   });
@@ -23,7 +22,7 @@ class FormBodyFieldMetadata {
   /// )
   /// ```
   /// means that the field `age` will be used in the form body.
-  final SimpleIdentifier fieldIdentifier;
+  final String fieldName;
 
   /// The metadata for the form class being used.
   final ClientClassMetadata formClassMetadata;
@@ -70,10 +69,9 @@ class FormBodyFieldMetadata {
       return _formClassType;
     }
 
-    final resolved =
-        formClassMetadata.instanceType!.asInstanceOf(
-          formClassMetadata.supertype!.element,
-        )!;
+    final resolved = formClassMetadata.instanceType!.asInstanceOf(
+      formClassMetadata.supertype!.element,
+    )!;
     return resolved.typeArguments[0];
   }
 
@@ -86,10 +84,9 @@ class FormBodyFieldMetadata {
       return _formClassType;
     }
 
-    final resolved =
-        formClassMetadata.instanceType!.asInstanceOf(
-          formClassMetadata.supertype!.element,
-        )!;
+    final resolved = formClassMetadata.instanceType!.asInstanceOf(
+      formClassMetadata.supertype!.element,
+    )!;
     return resolved.typeArguments[1];
   }
 
@@ -102,17 +99,16 @@ class FormBodyFieldMetadata {
       return _formClassType;
     }
 
-    final resolved =
-        formClassMetadata.instanceType!.asInstanceOf(
-          formClassMetadata.supertype!.element,
-        )!;
+    final resolved = formClassMetadata.instanceType!.asInstanceOf(
+      formClassMetadata.supertype!.element,
+    )!;
     return resolved.typeArguments[2];
   }
 
   @override
   String toString() =>
       'FormBodyFieldMetadata('
-      'fieldIdentifier: $fieldIdentifier, '
+      'fieldName: $fieldName, '
       'formClassMetadata: $formClassMetadata, '
       'genericTypeArguments: $genericTypeArguments'
       ')';
@@ -120,12 +116,12 @@ class FormBodyFieldMetadata {
   /// Creates a copy of this [FormBodyFieldMetadata] with the given fields
   /// replaced with the new values.
   FormBodyFieldMetadata copyWith({
-    SimpleIdentifier? fieldIdentifier,
+    String? fieldName,
     ClientClassMetadata? formClassMetadata,
     Map<TypeParameterElement, DartType>? genericTypeArguments,
   }) {
     return FormBodyFieldMetadata(
-      fieldIdentifier: fieldIdentifier ?? this.fieldIdentifier,
+      fieldName: fieldName ?? this.fieldName,
       formClassMetadata: formClassMetadata ?? this.formClassMetadata,
       genericTypeArguments: genericTypeArguments ?? this.genericTypeArguments,
     );

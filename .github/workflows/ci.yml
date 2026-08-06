@@ -35,7 +35,7 @@ jobs:
         run: |
           dart pub global activate coverage
           melos exec --dir-exists="test" -- "dart test --coverage=coverage"
-          melos exec --dir-exists="test" -- "dart pub global run coverage:format_coverage --lcov --in=coverage --out=coverage/lcov.info --report-on=lib"
+          melos exec --dir-exists="test" -- "dart pub global run coverage:format_coverage --lcov --in=coverage --out=coverage/lcov.info --package=. --report-on=lib"
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
@@ -88,6 +88,7 @@ jobs:
         uses: VeryGoodOpenSource/very_good_coverage@c953fca3e24a915e111cc6f55f03f756dcb3964c # v3
         with:
           path: ${{ matrix.path }}
+          min_coverage: 80
 
   check_pana:
     needs: build

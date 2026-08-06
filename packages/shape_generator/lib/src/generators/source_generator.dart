@@ -199,8 +199,9 @@ class SourceBuffer {
     String constructorName = '_',
     List<FunctionParameter> parameters = const [],
   }) {
-    final fullFactoryName =
-        factoryName.isEmpty ? className : '$className.$factoryName';
+    final fullFactoryName = factoryName.isEmpty
+        ? className
+        : '$className.$factoryName';
     final parameterNames = parameters.map((p) => p.name);
 
     writeSingleReturnFunction(
@@ -234,8 +235,9 @@ class SourceBuffer {
 
     _writeDocumentation(documentation);
 
-    final fullConstructorName =
-        constructorName.isEmpty ? className : '$className.$constructorName';
+    final fullConstructorName = constructorName.isEmpty
+        ? className
+        : '$className.$constructorName';
     final privateInstanceParameterNames = parameters.map(
       (p) => 'this.${p.name},',
     );

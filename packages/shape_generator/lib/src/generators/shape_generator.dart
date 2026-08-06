@@ -56,7 +56,7 @@ class ShapeGenerator extends GeneratorForAnnotation<GenerateFormBody> {
       return buffer.dump();
     } catch (e) {
       throw Exception('''
-An unknown error occurred while generating the form body for "${element.name}".
+An unknown error occurred while generating the form body for "${element.name ?? '<unnamed>'}".
 Please make sure your class is valid and try again.
 
 If this issue keeps occurring please report an issue at
@@ -101,10 +101,14 @@ $e
           kFormBodyBaseClassName,
         );
     final hasNamelessFactoryConstructor = classMetadata.constructors.any(
-      (c) => c.name == '' && c.isFactory,
+      (c) => (c.name == null || c.name == '' || c.name == 'new') && c.isFactory,
     );
     final hasPrivateConstructor = classMetadata.constructors.any(
-      (c) => c.isPrivate && c.name == '_' && c.isConst && c.parameters.isEmpty,
+      (c) =>
+          c.isPrivate &&
+          c.name == '_' &&
+          c.isConst &&
+          c.formalParameters.isEmpty,
     );
 
     final validateMethodOverrides = classMetadata.methods.where(
@@ -207,7 +211,7 @@ that returns an instance of "${generatedClassNames.generatedFormBodyClassName}".
     final result = [
       for (var i = 0; i < classMetadata.constructors.length; i++)
         ClientConstructorMetadata(
-          name: classMetadata.constructors[i].name,
+          name: classMetadata.constructors[i].name ?? 'new',
           enclosingClass: classMetadata.constructors[i].returnType,
           isFactory: classMetadata.constructors[i].isFactory,
           returnStatement: constructorReturnStatements[i],
@@ -224,7 +228,7 @@ that returns an instance of "${generatedClassNames.generatedFormBodyClassName}".
     final result = <ConstructorDeclaration>[];
     for (final constructor in constructors) {
       final astNode = await buildStep.resolver.astNodeFor(
-        constructor,
+        constructor.firstFragment,
         resolve: true,
       );
       final visitor = _ConstructorAstVisitor();
@@ -328,7 +332,7 @@ Expression found was: "$expression".''');
 
     for (var i = 0; i < formBodyArguments.length; i++) {
       final formBodyArgument = formBodyArguments[i];
-      if (formBodyArgument is! NamedExpression) {
+      if (formBodyArgument is! NamedArgument) {
         throw Exception(
           '''
 The argument at index $i in the "$generatedFormBodyClassName" construction
@@ -345,10 +349,10 @@ Argument found: "$formBodyArgument" (of type ${formBodyArgument.runtimeType})'''
         );
       }
 
-      final formFieldIdentifier = formBodyArgument.name.label;
-      if (formFieldIdentifier.name.startsWith('_')) {
+      final formFieldName = formBodyArgument.name.lexeme;
+      if (formFieldName.startsWith('_')) {
         throw Exception('''
-The form field with name "$formFieldIdentifier" is not a valid identifier.
+The form field with name "$formFieldName" is not a valid identifier.
 
 -----------------------------------------------
 
@@ -357,10 +361,10 @@ not start with an underscore.
 
 -----------------------------------------------
 
-Form field name found: "$formFieldIdentifier"''');
+Form field name found: "$formFieldName"''');
       }
 
-      final formFieldCreationExpression = formBodyArgument.expression;
+      final formFieldCreationExpression = formBodyArgument.argumentExpression;
       final formFieldExpressionType = formFieldCreationExpression.staticType;
       ClassElement? formFieldClassElement;
 
@@ -431,7 +435,7 @@ Instance type arguments found: "$instanceTypeArguments" (length ${instanceTypeAr
       }
 
       final formBodyFieldMetadata = FormBodyFieldMetadata(
-        fieldIdentifier: formFieldIdentifier,
+        fieldName: formFieldName,
         formClassMetadata: formFieldClassMetadata,
         genericTypeArguments: {
           for (

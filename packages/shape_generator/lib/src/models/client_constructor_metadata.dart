@@ -43,7 +43,9 @@ class ClientConstructorMetadata {
   }
 
   /// Indicates whether the constructor is unnamed.
-  bool get isUnnamed => name.isEmpty;
+  ///
+  /// Analyzer 14 reports the unnamed constructor name as `new`.
+  bool get isUnnamed => name.isEmpty || name == 'new';
 
   /// Indicates whether the [returnStatementType]'s name is the name of the
   /// [enclosingClass], prepended with `_$` (the [kGeneratedClassPrefix]).

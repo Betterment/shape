@@ -3,19 +3,15 @@ import 'package:shape/shape.dart';
 import 'package:test/test.dart' hide expect;
 
 class TestFormField<R, T, E> extends FormField<R?, R?, E> {
-  TestFormField({required R? rawValue, E? error})
-    : _error = error,
-      super(rawValue);
+  TestFormField({required R? rawValue, this.error}) : super(rawValue);
 
   @override
   R? get value => rawValue;
 
-  final E? _error;
+  final E? error;
 
   @override
-  E? validate() {
-    return _error;
-  }
+  E? validate() => error;
 }
 
 void main() {

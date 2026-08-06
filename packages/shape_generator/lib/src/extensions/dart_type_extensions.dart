@@ -1,5 +1,5 @@
+import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
-import 'package:shape_generator/src/extensions/extensions.dart';
 
 /// Extensions on [DartType] for convenience.
 extension DartTypeExtensions on DartType {
@@ -9,8 +9,14 @@ extension DartTypeExtensions on DartType {
   /// DartType(String).nonNullableDisplayString; // "String"
   /// DartType(String?).nonNullableDisplayString; // "String"
   /// ```
-  String get nonNullableDisplayString =>
-      getDisplayString().removeIfPresent('?');
+  String get nonNullableDisplayString {
+    final display = getDisplayString();
+    if (nullabilitySuffix == NullabilitySuffix.question &&
+        display.endsWith('?')) {
+      return display.substring(0, display.length - 1);
+    }
+    return display;
+  }
 
   /// The potentially nullable display string of this type.
   ///
@@ -19,9 +25,7 @@ extension DartTypeExtensions on DartType {
   ///
   /// ```dart
   /// DartType(String).potentiallyNullableDisplayString; // "String"
-  /// DartType(String?).potentiallyNullableDisplayString; // "String"
+  /// DartType(String?).potentiallyNullableDisplayString; // "String?"
   /// ```
-  String get potentiallyNullableDisplayString {
-    return getDisplayString();
-  }
+  String get potentiallyNullableDisplayString => getDisplayString();
 }

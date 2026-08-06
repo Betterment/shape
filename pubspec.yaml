@@ -1,4 +1,5 @@
 name: shape_workspace
+publish_to: none
 
 workspace:
   - packages/shape
@@ -7,10 +8,10 @@ workspace:
   - packages/shape_generator
 
 environment:
-  sdk: ^3.7.2
+  sdk: '>=3.12.2 <4.0.0'
 
 dev_dependencies:
-  lints: ^5.1.1
+  lints: ^6.1.0
   melos: ^7.0.0-dev.8
 
 melos:
