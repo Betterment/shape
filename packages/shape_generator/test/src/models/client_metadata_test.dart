@@ -92,9 +92,9 @@ abstract class SampleFormBody extends FormBody with _\$SampleFormBodyFields {
     setUp(() {
       enclosingClass = MockInterfaceType();
       when(() => enclosingClass.nonNullableDisplayString).thenReturn('Foo');
-      when(() => enclosingClass.nullabilitySuffix).thenReturn(
-        NullabilitySuffix.none,
-      );
+      when(
+        () => enclosingClass.nullabilitySuffix,
+      ).thenReturn(NullabilitySuffix.none);
       when(() => enclosingClass.getDisplayString()).thenReturn('Foo');
     });
 

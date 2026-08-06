@@ -20,9 +20,9 @@ void main() {
       when(
         () => formClassType.potentiallyNullableDisplayString,
       ).thenReturn('NameFormField');
-      when(() => formClassType.nullabilitySuffix).thenReturn(
-        NullabilitySuffix.none,
-      );
+      when(
+        () => formClassType.nullabilitySuffix,
+      ).thenReturn(NullabilitySuffix.none);
 
       formClassMetadata = ClientClassMetadata(
         baseType: formClassType,

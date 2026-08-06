@@ -77,9 +77,9 @@ $genericFormFieldSource
       check(result.succeeded).isTrue();
       // Custom wrappers become typed factory params; the call site expression is
       // not re-emitted into the generated factory body.
-      check(result.generated!).contains(
-        'required GenericFormField<String?> name',
-      );
+      check(
+        result.generated!,
+      ).contains('required GenericFormField<String?> name');
       check(
         result.generated!.contains(
           'GenericFormField<String?>(name, isRequired: true)',
@@ -110,9 +110,9 @@ $genericFormFieldSource
 
       check(result.succeeded).isTrue();
       check(result.generated!).contains('class _\$RedirectFormBody');
-      check(result.generated!).contains(
-        'GenericFormField<String?>(name, isRequired: true)',
-      );
+      check(
+        result.generated!,
+      ).contains('GenericFormField<String?>(name, isRequired: true)');
     });
   });
 }
