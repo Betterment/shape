@@ -1,19 +1,15 @@
-// ignore_for_file: prefer_const_constructors
 import 'package:checks/checks.dart';
 import 'package:shape/shape.dart';
 import 'package:test/test.dart' hide expect;
 
-class TestFormBody extends FormBody<TestFormErrors> with Equatable {
+class TestFormBody extends FormBody {
   const TestFormBody();
 
   @override
   TestFormErrors validate() => const TestFormErrors([]);
-
-  @override
-  List<Object?> get props => [];
 }
 
-class TestFormErrors extends FormErrors<TestFormBody> {
+class TestFormErrors extends FormErrors {
   const TestFormErrors(this._errors);
   final List<Object?> _errors;
 
@@ -28,7 +24,7 @@ void main() {
     });
 
     test('validate method returns correct type', () {
-      check(TestFormBody().validate()).isA<TestFormErrors>();
+      check(const TestFormBody().validate()).isA<TestFormErrors>();
     });
   });
 
@@ -37,7 +33,7 @@ void main() {
     const nonEmptyFormErrors = TestFormErrors(['Error', 123, null]);
 
     test('can be instantiated', () {
-      check(() => TestFormErrors(const [])).returnsNormally();
+      check(() => const TestFormErrors([])).returnsNormally();
     });
 
     test('TestFormErrors.errors field returns given errors', () {

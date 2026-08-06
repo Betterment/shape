@@ -60,46 +60,35 @@ enum GenericValidationError { missing }
 String validFormBodySource({
   required String className,
   String? errorsClassName,
-  String? fieldsMixinName,
   String? generatedClassName,
   String? factoryBody,
   String factoryParams = 'required String? name',
 }) {
   final generated = generatedClassName ?? '_\$$className';
-  final fieldsMixin = fieldsMixinName ?? '_\$${className}Fields';
-  final errors = errorsClassName ?? _errorsClassNameFor(className);
   final body =
       factoryBody ??
       '''
     return $generated(
-      name: GenericFormField<String?>(name, isRequired: true),
+      name: name,
     );''';
 
   return '''
 import 'package:shape/shape.dart';
+import 'package:shape_starter_kit/shape_starter_kit.dart';
 
 part 'form_body.g.dart';
 
 @GenerateFormBody()
-abstract class $className extends FormBody<$errors>
-    with $fieldsMixin {
+abstract class $className extends FormBody with _\$${className}Fields {
+  const $className._();
+
   factory $className({$factoryParams}) {
     $body
   }
-
-  const $className._();
 }
 
 $genericFormFieldSource
 ''';
-}
-
-String _errorsClassNameFor(String formBodyClassName) {
-  final indexOfBodyPart = formBodyClassName.lastIndexOf('Body');
-  final truncated = indexOfBodyPart == -1
-      ? formBodyClassName
-      : formBodyClassName.substring(0, indexOfBodyPart);
-  return '${truncated}Errors';
 }
 
 /// Runs [ShapeGenerator] against synthetic [source] in `_resolve_source`.

@@ -3,42 +3,28 @@
 ///
 /// Used in conjunction with the `shape_generator` package to generate a form
 /// from a set of [FormField]s.
-///
-/// The generic type [E] represents the type of the error container when
-/// calling [validate].
 /// {@endtemplate}
 ///
 /// {@template form_body_sample}
 /// ```dart
 /// @GenerateFormBody()
-/// abstract class RegistrationFormBody
-///   extends FormBody<RegistrationFormErrors>
-///   with _$RegistrationFormBodyFields {
-///   factory RegistrationFormBody({
-///     required String username,
-///     required String age,
-///   }) {
-///     return _$RegistrationFormBody(
-///       username: GenericFormField(
-///         value: username,
-///         isRequired: true,
-///       ),
-///       age: AgeFormField(
-///         value: age,
-///       ),
-///     );
-///   }
-///
+/// abstract class RegistrationFormBody extends FormBody {
 ///   const RegistrationFormBody._();
+///
+///   factory RegistrationFormBody({
+///     @FieldRequired() String username,
+///     @FieldRequired() String age,
+///   }) =>
+///       _$RegistrationFormBody(username: username, age: age);
 /// }
 /// ```
 /// {@endtemplate}
-abstract class FormBody<E extends FormErrors<dynamic>> {
+abstract class FormBody {
   /// {@macro form_body}
   const FormBody();
 
   /// Validates all the fields in this form.
-  E validate();
+  FormErrors validate();
 }
 
 /// {@template form_errors}
@@ -47,16 +33,12 @@ abstract class FormBody<E extends FormErrors<dynamic>> {
 /// Used in conjunction with the `shape_generator` package to generate the
 /// errors for a [FormBody].
 ///
-/// The generic type [E] represents the type of the [FormBody] container that
-/// this error represents.
-///
 /// Any classes extending [FormErrors] must override the [errors] getter and
 /// provide it all the errors that occurred during validation.
 ///
 /// Use [hasErrors] to determine if there are any errors in this container.
 /// {@endtemplate}
-/// {@macro form_body_sample}
-abstract class FormErrors<E extends FormBody<dynamic>> {
+abstract class FormErrors {
   /// {@macro form_errors}
   const FormErrors();
 

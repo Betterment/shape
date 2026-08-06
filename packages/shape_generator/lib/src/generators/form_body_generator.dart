@@ -42,6 +42,13 @@ class FormBodyGenerator with SourceGenerator {
 
   @override
   void write(SourceBuffer buffer) {
+    final constructorArguments = fields
+        .map(
+          (field) =>
+              field.isCustomWrapper ? field.fieldName : field.wrapperExpression,
+        )
+        .join(', ');
+
     buffer
       ..writeComment(
         'Form Body "${generatedClassNames.generatedFormBodyClassName}"',
@@ -50,23 +57,23 @@ class FormBodyGenerator with SourceGenerator {
       ..writeClassDeclarationStart(
         name: generatedClassNames.generatedFormBodyClassName,
         extendedClass: generatedClassNames.formBodyClassName,
-        mixins: [
-          generatedClassNames.generatedFormBodyFieldsMixinName,
-          'Equatable',
-        ],
       )
-      ..writeClassFactoryConstructor(
+      ..writeFactoryConstructorBody(
         className: generatedClassNames.generatedFormBodyClassName,
-        factoryName: '',
-        constructorName: '_',
         parameters: [
           for (final field in fields)
             FunctionParameter(
-              type: field.formClassName,
+              type: field.isCustomWrapper
+                  ? field.formClassName
+                  : field.rawValueType.potentiallyNullableDisplayString,
               name: field.fieldName,
-              isRequired: true,
+              isRequired: field.isFactoryParameterRequired,
             ),
         ],
+        body:
+            'return ${generatedClassNames.generatedFormBodyClassName}._('
+            '$constructorArguments,'
+            ');',
       )
       ..writeClassConstructor(
         className: generatedClassNames.generatedFormBodyClassName,
@@ -78,10 +85,9 @@ class FormBodyGenerator with SourceGenerator {
               name: '_${field.fieldName}',
             ),
         ],
-        useConstConstructor: true,
+        useConstConstructor: false,
         useNamedParameters: false,
         supertypeConstructorName: '_',
-        passParametersToSuper: false,
       );
 
     for (final field in fields) {
@@ -131,17 +137,9 @@ class FormBodyGenerator with SourceGenerator {
         value: '${generatedClassNames.generatedCopyWithImplClassName}(this)',
         isOverride: true,
       )
-      ..writeClassGetter(
-        type: 'List<${'Object'.nullableTypeString}>',
-        name: 'props',
-        value: '[${fields.map((f) => '_${_getRawValue(f)},').join()}]',
-        isOverride: true,
-      )
-      ..writeClassGetter(
-        type: 'bool',
-        name: 'stringify',
-        value: 'true',
-        isOverride: true,
+      ..writeEqualityOperators(
+        className: generatedClassNames.generatedFormBodyClassName,
+        equalityFields: [for (final field in fields) '_${_getRawValue(field)}'],
       )
       ..writeClassDeclarationEnd()
       ..writeComment(

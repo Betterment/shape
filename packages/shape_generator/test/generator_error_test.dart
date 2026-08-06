@@ -18,24 +18,14 @@ void main() {
 
     test('rejects classes that do not extend FormBody', () async {
       final result = await runShapeGenerator(
-        source: validFormBodySource(
-          className: 'PlainFormBody',
-        ).replaceFirst('extends FormBody<PlainFormErrors>\n    ', ''),
+        source: validFormBodySource(className: 'PlainFormBody').replaceFirst(
+          'extends FormBody with _\$PlainFormBodyFields',
+          'with _\$PlainFormBodyFields implements Object',
+        ),
         className: 'PlainFormBody',
       );
 
       expectGenerationFailure(result, 'extends FormBody');
-    });
-
-    test('rejects missing private constructor', () async {
-      final result = await runShapeGenerator(
-        source: validFormBodySource(
-          className: 'MissingPrivateCtorFormBody',
-        ).replaceFirst('\n  const MissingPrivateCtorFormBody._();\n', '\n'),
-        className: 'MissingPrivateCtorFormBody',
-      );
-
-      expectGenerationFailure(result, 'private const constructor');
     });
 
     test('rejects missing factory constructor', () async {
@@ -43,14 +33,12 @@ void main() {
         source:
             '''
 import 'package:shape/shape.dart';
+import 'package:shape_starter_kit/shape_starter_kit.dart';
 
 part 'form_body.g.dart';
 
 @GenerateFormBody()
-abstract class MissingFactoryFormBody extends FormBody<MissingFactoryErrors>
-    with _\$MissingFactoryFormBodyFields {
-  const MissingFactoryFormBody._();
-}
+abstract class MissingFactoryFormBody extends FormBody {}
 
 $genericFormFieldSource
 ''',
@@ -67,14 +55,12 @@ $genericFormFieldSource
         source: validFormBodySource(
           className: 'PositionalArgsFormBody',
           factoryBody: '''
-    return _\$PositionalArgsFormBody(
-      GenericFormField<String?>(name, isRequired: true),
-    );''',
+    return _\$PositionalArgsFormBody(name);''',
         ),
         className: 'PositionalArgsFormBody',
       );
 
-      expectGenerationFailure(result, 'is not a named argument');
+      expectGenerationFailure(result, 'not a named argument');
     });
 
     test('rejects private field names', () async {
@@ -83,32 +69,14 @@ $genericFormFieldSource
           className: 'PrivateFieldFormBody',
           factoryBody: '''
     return _\$PrivateFieldFormBody(
-      _secret: GenericFormField<String?>(name, isRequired: true),
+      _secret: name,
     );''',
+          factoryParams: 'required String? name, required String? _secret',
         ),
         className: 'PrivateFieldFormBody',
       );
 
       expectGenerationFailure(result, 'not a valid identifier');
-    });
-
-    test('rejects indirect factory return expressions', () async {
-      final result = await runShapeGenerator(
-        source: validFormBodySource(
-          className: 'BadReturnFormBody',
-          factoryBody: '''
-    final body = _\$BadReturnFormBody(
-      name: GenericFormField<String?>(name, isRequired: true),
-    );
-    return body;''',
-        ),
-        className: 'BadReturnFormBody',
-      );
-
-      expectGenerationFailure(
-        result,
-        'No valid constructors found in class "BadReturnFormBody"',
-      );
     });
 
     test('rejects factories returning the wrong generated class', () async {
@@ -117,7 +85,7 @@ $genericFormFieldSource
           className: 'WrongReturnTypeFormBody',
           factoryBody: '''
     return WrongClass(
-      name: GenericFormField<String?>(name, isRequired: true),
+      name: name,
     );''',
         ),
         className: 'WrongReturnTypeFormBody',
@@ -132,14 +100,17 @@ $genericFormFieldSource
     test('rejects multiple valid factory constructors', () async {
       final result = await runShapeGenerator(
         source: validFormBodySource(className: 'DualFactoryFormBody')
-            .replaceFirst('const DualFactoryFormBody._();', '''
+            .replaceFirst(
+              'factory DualFactoryFormBody({required String? name}) {',
+              '''
   factory DualFactoryFormBody.alt({required String? name}) {
     return _\$DualFactoryFormBody(
-      name: GenericFormField<String?>(name),
+      name: name,
     );
   }
 
-  const DualFactoryFormBody._();'''),
+  factory DualFactoryFormBody({required String? name}) {''',
+            ),
         className: 'DualFactoryFormBody',
       );
 

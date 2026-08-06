@@ -1,4 +1,3 @@
-import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 
 /// {@template generate_form_body}
@@ -8,7 +7,7 @@ import 'package:meta/meta.dart';
 /// processed by the `shape_generator` code generator.
 /// {@endtemplate}
 @immutable
-class GenerateFormBody extends Equatable {
+class GenerateFormBody {
   /// {@macro generate_form_body}
   const GenerateFormBody({bool? generateFormErrors})
     : generateFormErrors = generateFormErrors ?? true;
@@ -17,5 +16,11 @@ class GenerateFormBody extends Equatable {
   final bool generateFormErrors;
 
   @override
-  List<Object> get props => [generateFormErrors];
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is GenerateFormBody &&
+          other.generateFormErrors == generateFormErrors;
+
+  @override
+  int get hashCode => generateFormErrors.hashCode;
 }

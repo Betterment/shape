@@ -9,18 +9,15 @@
 /// type [E] if the field is invalid. If the field is valid, it will return
 /// `null`.
 ///
+/// When [R] and [T] are the same, prefer [SimpleFormField].
+///
 /// ```dart
 /// enum UsernameValidationError { empty, invalid }
 ///
 /// class UsernameField
-///   extends FormField<String, String, UsernameValidationError> {
-///   const UsernameField({
-///     required String rawValue,
-///     this.isRequired = true,
-///   }) : super(rawValue);
+///   extends SimpleFormField<String, UsernameValidationError> {
 ///
-///   @override
-///   String get value => rawValue;
+///   const UsernameField(super.rawValue, {this.isRequired = true});
 ///
 ///   final bool isRequired;
 ///
@@ -53,3 +50,6 @@ abstract class FormField<R, T, E> {
   /// field is valid, `null` will be returned.
   E? validate();
 }
+
+/// A [FormField] where the raw and parsed value types are the same.
+typedef SimpleFormField<T, E> = FormField<T, T, E>;

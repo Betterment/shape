@@ -15,6 +15,7 @@ dependencies:
   meta: ^1.19.0
   path: ^1.9.1
   shape: ^0.1.0
+  shape_starter_kit: ^0.1.0
   source_gen: ^4.2.4
 
 dev_dependencies:

@@ -11,12 +11,15 @@ class FormBodyFieldMetadata {
   const FormBodyFieldMetadata({
     required this.fieldName,
     required this.formClassMetadata,
+    required this.wrapperExpression,
+    this.isCustomWrapper = false,
+    this.isFactoryParameterRequired = false,
     this.genericTypeArguments = const {},
   });
 
   /// The name of the field to be used in the form body.
   ///
-  /// ```
+  /// ```dart
   /// MyFormBody(
   ///   age: AgeFormField(...)
   /// )
@@ -27,10 +30,19 @@ class FormBodyFieldMetadata {
   /// The metadata for the form class being used.
   final ClientClassMetadata formClassMetadata;
 
+  /// The expression used to construct the form field in the generated factory.
+  final String wrapperExpression;
+
+  /// Indicates whether the wrapper is explicitly provided by user code.
+  final bool isCustomWrapper;
+
+  /// Whether the user-facing factory parameter is required.
+  final bool isFactoryParameterRequired;
+
   /// A [Map] of the relationships between the generic type arguments of the
   /// [formClassType] and the types assigned to those generics.
   ///
-  /// ```
+  /// ```dart
   /// class SomeFormField<A, B, C> extends FormField<A, B, C> {...}
   ///
   /// final myFormField = new SomeFormField<int, bool, String>(...);
@@ -57,6 +69,14 @@ class FormBodyFieldMetadata {
   /// `class NameFormField extends FormField<String, String, NameFormFieldValidationError>`
   /// means that the class [formClassName] is `NameFormField`.
   String get formClassName {
+    if (genericTypeArguments.isNotEmpty &&
+        formClassMetadata.typeParameters.isNotEmpty) {
+      final typeArguments = genericTypeArguments.values
+          .map((type) => type.getDisplayString())
+          .join(', ');
+      final baseName = formClassMetadata.name.split('<').first;
+      return '$baseName<$typeArguments>';
+    }
     return _formClassType.potentiallyNullableDisplayString;
   }
 
@@ -65,6 +85,9 @@ class FormBodyFieldMetadata {
   /// If [extendsFormField] is `false`, this will return the [formClassMetadata]
   /// instance type or base type.
   DartType get rawValueType {
+    if (extendsFormField && genericTypeArguments.length == 1) {
+      return genericTypeArguments.values.first;
+    }
     if (!extendsFormField) {
       return _formClassType;
     }
@@ -80,6 +103,9 @@ class FormBodyFieldMetadata {
   /// If [extendsFormField] is `false`, this will return the [formClassMetadata]
   /// instance type or base type.
   DartType get valueType {
+    if (extendsFormField && genericTypeArguments.length == 1) {
+      return genericTypeArguments.values.first;
+    }
     if (!extendsFormField) {
       return _formClassType;
     }
@@ -109,6 +135,8 @@ class FormBodyFieldMetadata {
   String toString() =>
       'FormBodyFieldMetadata('
       'fieldName: $fieldName, '
+      'wrapperExpression: $wrapperExpression, '
+      'isCustomWrapper: $isCustomWrapper, '
       'formClassMetadata: $formClassMetadata, '
       'genericTypeArguments: $genericTypeArguments'
       ')';
@@ -118,11 +146,15 @@ class FormBodyFieldMetadata {
   FormBodyFieldMetadata copyWith({
     String? fieldName,
     ClientClassMetadata? formClassMetadata,
+    String? wrapperExpression,
+    bool? isCustomWrapper,
     Map<TypeParameterElement, DartType>? genericTypeArguments,
   }) {
     return FormBodyFieldMetadata(
       fieldName: fieldName ?? this.fieldName,
       formClassMetadata: formClassMetadata ?? this.formClassMetadata,
+      wrapperExpression: wrapperExpression ?? this.wrapperExpression,
+      isCustomWrapper: isCustomWrapper ?? this.isCustomWrapper,
       genericTypeArguments: genericTypeArguments ?? this.genericTypeArguments,
     );
   }

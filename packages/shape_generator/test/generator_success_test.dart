@@ -16,37 +16,23 @@ void main() {
       check(result.generated!).contains('MinimalFormErrors');
     });
 
-    test('supports generic form field type parameters', () async {
-      const genericField = '''
-class NullableFormField<T> extends FormField<T?, T?, GenericValidationError> {
-  NullableFormField({required T? rawValue}) : super(rawValue);
-
-  @override
-  T? get value => rawValue;
-
-  @override
-  GenericValidationError? validate() => null;
-}
-''';
-
+    test('wraps plain factory parameters in GenericFormField', () async {
       final result = await runShapeGenerator(
-        source:
-            validFormBodySource(
-              className: 'GenericFormBody',
-              factoryParams: 'required Object? value',
-              factoryBody: '''
+        source: validFormBodySource(
+          className: 'GenericFormBody',
+          factoryParams: '@FieldRequired() Object? value',
+          factoryBody: '''
     return _\$GenericFormBody(
-      value: NullableFormField<Object?>(rawValue: value),
+      value: value,
     );''',
-            ).replaceFirst(
-              genericFormFieldSource,
-              '$genericFormFieldSource\n$genericField',
-            ),
+        ),
         className: 'GenericFormBody',
       );
 
       check(result.succeeded).isTrue();
-      check(result.generated!).contains('NullableFormField<Object?> value');
+      check(
+        result.generated!,
+      ).contains('GenericFormField<Object?>(value, isRequired: true)');
     });
 
     test('generates without form errors when disabled', () async {
@@ -54,19 +40,16 @@ class NullableFormField<T> extends FormField<T?, T?, GenericValidationError> {
         source:
             '''
 import 'package:shape/shape.dart';
+import 'package:shape_starter_kit/shape_starter_kit.dart';
 
 part 'form_body.g.dart';
 
 @GenerateFormBody(generateFormErrors: false)
-abstract class NoErrorsFormBody extends FormBody<Never>
-    with _\$NoErrorsFormBodyFields {
-  factory NoErrorsFormBody({required String? name}) {
-    return _\$NoErrorsFormBody(
-      name: GenericFormField<String?>(name),
-    );
-  }
-
+abstract class NoErrorsFormBody extends FormBody with _\$NoErrorsFormBodyFields {
   const NoErrorsFormBody._();
+
+  factory NoErrorsFormBody({required String? name}) =>
+      _\$NoErrorsFormBody(name: name);
 }
 
 $genericFormFieldSource

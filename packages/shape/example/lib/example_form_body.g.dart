@@ -8,15 +8,14 @@ part of 'example_form_body.dart';
 
 // Form Body "_$ExampleFormBody"
 @immutable
-class _$ExampleFormBody extends ExampleFormBody
-    with _$ExampleFormBodyFields, Equatable {
-  factory _$ExampleFormBody({
-    required GenericFormField<String?> name,
-    required GenericFormField<int?> age,
-  }) {
-    return _$ExampleFormBody._(name, age);
+class _$ExampleFormBody extends ExampleFormBody {
+  factory _$ExampleFormBody({String? name, int? age}) {
+    return _$ExampleFormBody._(
+      GenericFormField<String?>(name, isRequired: true),
+      GenericFormField<int?>(age),
+    );
   }
-  const _$ExampleFormBody._(this._name, this._age) : super._();
+  _$ExampleFormBody._(this._name, this._age) : super._();
   @override
   final GenericFormField<String?> _name;
   @override
@@ -33,9 +32,14 @@ class _$ExampleFormBody extends ExampleFormBody
   @override
   _$ExampleFormBodyCopyWith get copyWith => _$ExampleFormBodyCopyWithImpl(this);
   @override
-  List<Object?> get props => [_name.rawValue, _age.rawValue];
+  bool operator ==(Object other) {
+    return other is _$ExampleFormBody &&
+        other._name.rawValue == _name.rawValue &&
+        other._age.rawValue == _age.rawValue;
+  }
+
   @override
-  bool get stringify => true;
+  int get hashCode => Object.hash(_name.rawValue, _age.rawValue);
 }
 
 // Copy With Interface "_$ExampleFormBodyCopyWith"
@@ -88,7 +92,7 @@ mixin _$ExampleFormBodyFields {
 // Form Errors "ExampleFormErrors"
 @immutable
 /// The form errors for the form body "ExampleFormBody".
-class ExampleFormErrors extends FormErrors<_$ExampleFormBody> with Equatable {
+class ExampleFormErrors extends FormErrors {
   /// The form errors for the form body "ExampleFormBody".
   const ExampleFormErrors({this.name, this.age});
 
@@ -111,9 +115,12 @@ class ExampleFormErrors extends FormErrors<_$ExampleFormBody> with Equatable {
   @override
   List<Object?> get errors => [name, age];
   @override
-  List<Object?> get props => errors;
+  bool operator ==(Object other) {
+    return other is ExampleFormErrors && other.name == name && other.age == age;
+  }
+
   @override
-  bool get stringify => true;
+  int get hashCode => Object.hash(name, age);
 }
 
 // Copy With Interface "_ExampleFormErrorsCopyWith"

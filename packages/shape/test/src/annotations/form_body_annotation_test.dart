@@ -12,10 +12,10 @@ void main() {
       check(buildSubject).returnsNormally().isA<GenerateFormBody>();
     });
 
-    test('has correct props', () {
+    test('compares equal when generateFormErrors matches', () {
       final subject = buildSubject();
 
-      check(subject.props).deepEquals([subject.generateFormErrors]);
+      check(subject).equals(const GenerateFormBody(generateFormErrors: true));
     });
   });
 }

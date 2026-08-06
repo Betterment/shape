@@ -5,18 +5,40 @@ formatter:
 
 linter:
   rules:
-    - cascade_invocations
-    - lines_longer_than_80_chars
-    - package_api_docs
-    - prefer_const_constructors
-    - prefer_const_constructors_in_immutables
-    - prefer_const_declarations
-    - prefer_const_literals_to_create_immutables
-    - prefer_single_quotes
-    - public_member_api_docs
-    - require_trailing_commas
-    - sort_constructors_first
-    - sort_pub_dependencies
+    cascade_invocations: true
+    lines_longer_than_80_chars: true
+    prefer_const_constructors: true
+    prefer_const_constructors_in_immutables: true
+    prefer_const_declarations: true
+    prefer_const_literals_to_create_immutables: true
+    prefer_single_quotes: true
+    public_member_api_docs: true
+    require_trailing_commas: true
+    sort_constructors_first: true
+    sort_pub_dependencies: true
+    simple_directive_paths: true
+    simplify_variable_pattern: true
+    remove_deprecations_in_breaking_versions: true
+    switch_on_type: true
+    unnecessary_unawaited: true
+    use_null_aware_elements: true
+    unnecessary_ignore: true
+    strict_top_level_inference: true
+    unnecessary_underscores: true
+    omit_obvious_property_types: true
+    unnecessary_async: true
+    unsafe_variance: true
+    use_truncating_division: true
+    omit_obvious_local_variable_types: true
+    avoid_futureor_void: true
+    unintended_html_in_doc_comment: true
+    invalid_runtime_check_with_js_interop_types: true
+    document_ignores: true
+    unnecessary_library_name: true
+    missing_code_block_language_in_doc_comment: true
+    annotate_redeclares: true
+    no_self_assignments: true
+    no_wildcard_variable_uses: true
 
 analyzer:
   language:
@@ -26,5 +48,5 @@ analyzer:
     missing_return: error
     missing_required_param: error
   exclude:
-    - "build/**"
-    - "**/*.g.dart"
+    - 'build/**'
+    - '**/*.g.dart'

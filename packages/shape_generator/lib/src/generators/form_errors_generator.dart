@@ -34,9 +34,8 @@ class FormErrorsGenerator with SourceGenerator {
             'The form errors for the form body '
             '"${generatedClassNames.formBodyClassName}".',
         name: generatedClassNames.generatedFormErrorsClassName,
-        extendedClass:
-            'FormErrors<${generatedClassNames.generatedFormBodyClassName}>',
-        mixins: ['Equatable'],
+        extendedClass: 'FormErrors',
+        mixins: [],
       )
       ..writeClassConstructor(
         documentation:
@@ -103,17 +102,9 @@ Copies this ${generatedClassNames.generatedFormErrorsClassName} and replaces the
         value: '[${fields.map((f) => '${f.fieldName},').join()}]',
         isOverride: true,
       )
-      ..writeClassGetter(
-        type: 'List<${'Object'.nullableTypeString}>',
-        name: 'props',
-        value: 'errors',
-        isOverride: true,
-      )
-      ..writeClassGetter(
-        type: 'bool',
-        name: 'stringify',
-        value: 'true',
-        isOverride: true,
+      ..writeEqualityOperators(
+        className: generatedClassNames.generatedFormErrorsClassName,
+        equalityFields: fields.map((field) => field.fieldName).toList(),
       )
       ..writeClassDeclarationEnd()
       ..writeComment(
@@ -165,7 +156,6 @@ Copies this ${generatedClassNames.generatedFormErrorsClassName} and replaces the
 
     final copyWithFields = [
       for (final field in fields)
-        // ignore: no_adjacent_strings_in_list
         '''${field.fieldName}: ${field.fieldName} == _defaultValue ? _instance.${field.fieldName} : ${field.fieldName} as ${field.errorType.potentiallyNullableDisplayString.nullableTypeString},''',
     ];
     buffer

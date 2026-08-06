@@ -1,11 +1,10 @@
-import 'package:equatable/equatable.dart';
 import 'package:shape_generator/src/models/models.dart';
 
 /// {@template generated_class_names}
 /// A model that contains the strings for generated classes, mixins and other
 /// models.
 /// {@endtemplate}
-class GeneratedClassNames extends Equatable {
+class GeneratedClassNames {
   /// {@macro generated_class_names}
   const GeneratedClassNames({required this.formBodyClassName});
 
@@ -48,9 +47,5 @@ class GeneratedClassNames extends Equatable {
 
   /// The name of the interface that the implementing form body class should
   /// extend.
-  String get extendingFormBodyClassName =>
-      '$kFormBodyBaseClassName<$generatedFormErrorsClassName>';
-
-  @override
-  List<Object?> get props => [formBodyClassName];
+  String get extendingFormBodyClassName => kFormBodyBaseClassName;
 }

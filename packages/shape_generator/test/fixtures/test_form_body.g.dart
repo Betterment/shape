@@ -8,7 +8,7 @@ part of 'test_form_body.dart';
 
 // Form Body "_$TestFormBody"
 @immutable
-class _$TestFormBody extends TestFormBody with _$TestFormBodyFields, Equatable {
+class _$TestFormBody extends TestFormBody {
   factory _$TestFormBody({
     required NonEmptyStringFormField stringField,
     required ValidIntFormField intField,
@@ -16,7 +16,7 @@ class _$TestFormBody extends TestFormBody with _$TestFormBodyFields, Equatable {
   }) {
     return _$TestFormBody._(stringField, intField, nullableField);
   }
-  const _$TestFormBody._(this._stringField, this._intField, this._nullableField)
+  _$TestFormBody._(this._stringField, this._intField, this._nullableField)
     : super._();
   @override
   final NonEmptyStringFormField _stringField;
@@ -42,13 +42,19 @@ class _$TestFormBody extends TestFormBody with _$TestFormBodyFields, Equatable {
   @override
   _$TestFormBodyCopyWith get copyWith => _$TestFormBodyCopyWithImpl(this);
   @override
-  List<Object?> get props => [
+  bool operator ==(Object other) {
+    return other is _$TestFormBody &&
+        other._stringField.rawValue == _stringField.rawValue &&
+        other._intField.rawValue == _intField.rawValue &&
+        other._nullableField.rawValue == _nullableField.rawValue;
+  }
+
+  @override
+  int get hashCode => Object.hash(
     _stringField.rawValue,
     _intField.rawValue,
     _nullableField.rawValue,
-  ];
-  @override
-  bool get stringify => true;
+  );
 }
 
 // Copy With Interface "_$TestFormBodyCopyWith"
@@ -122,7 +128,7 @@ mixin _$TestFormBodyFields {
 // Form Errors "TestFormErrors"
 @immutable
 /// The form errors for the form body "TestFormBody".
-class TestFormErrors extends FormErrors<_$TestFormBody> with Equatable {
+class TestFormErrors extends FormErrors {
   /// The form errors for the form body "TestFormBody".
   const TestFormErrors({this.stringField, this.intField, this.nullableField});
 
@@ -151,9 +157,15 @@ class TestFormErrors extends FormErrors<_$TestFormBody> with Equatable {
   @override
   List<Object?> get errors => [stringField, intField, nullableField];
   @override
-  List<Object?> get props => errors;
+  bool operator ==(Object other) {
+    return other is TestFormErrors &&
+        other.stringField == stringField &&
+        other.intField == intField &&
+        other.nullableField == nullableField;
+  }
+
   @override
-  bool get stringify => true;
+  int get hashCode => Object.hash(stringField, intField, nullableField);
 }
 
 // Copy With Interface "_TestFormErrorsCopyWith"

@@ -1,3 +1,4 @@
+import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:build/build.dart';
 import 'package:build_test/build_test.dart';
@@ -20,11 +21,8 @@ void main() {
           '_resolve_source|lib/metadata.dart': '''
 import 'package:shape/shape.dart';
 
-class NullableFormField<T> extends FormField<T?, T?, GenericValidationError> {
+class NullableFormField<T> extends SimpleFormField<T?, GenericValidationError> {
   NullableFormField({required T? rawValue}) : super(rawValue);
-
-  @override
-  T? get value => rawValue;
 
   @override
   GenericValidationError? validate() => null;
@@ -34,10 +32,10 @@ enum GenericValidationError { missing }
 ''',
         },
         (resolver) async {
-          final library = await resolver.libraryFor(
+          final LibraryElement library = await resolver.libraryFor(
             AssetId('_resolve_source', 'lib/metadata.dart'),
           );
-          final element = library.getClass('NullableFormField')!;
+          final ClassElement element = library.getClass('NullableFormField')!;
           final metadata = ClientClassMetadata.fromElement(element);
 
           check(metadata.typeParameters).length.equals(1);
@@ -54,37 +52,22 @@ enum GenericValidationError { missing }
         {
           '_resolve_source|lib/metadata.dart': '''
 import 'package:shape/shape.dart';
+import 'package:shape_starter_kit/shape_starter_kit.dart';
 
 @GenerateFormBody()
-abstract class SampleFormBody extends FormBody<SampleFormErrors>
-    with _\$SampleFormBodyFields {
-  factory SampleFormBody({required String? name}) {
-    return _\$SampleFormBody(
-      name: GenericFormField<String?>(name),
-    );
-  }
-
+abstract class SampleFormBody extends FormBody with _\$SampleFormBodyFields {
   const SampleFormBody._();
+
+  factory SampleFormBody({@FieldRequired() String? name}) =>
+      _\$SampleFormBody(name: name);
 }
-
-class GenericFormField<T> extends FormField<T, T, GenericValidationError> {
-  const GenericFormField(super.rawValue);
-
-  @override
-  T get value => rawValue;
-
-  @override
-  GenericValidationError? validate() => null;
-}
-
-enum GenericValidationError { missing }
 ''',
         },
         (resolver) async {
-          final library = await resolver.libraryFor(
+          final LibraryElement library = await resolver.libraryFor(
             AssetId('_resolve_source', 'lib/metadata.dart'),
           );
-          final element = library.getClass('SampleFormBody')!;
+          final ClassElement element = library.getClass('SampleFormBody')!;
           final metadata = ClientClassMetadata.fromElement(element);
 
           check(
@@ -113,7 +96,8 @@ enum GenericValidationError { missing }
         name: 'new',
         enclosingClass: enclosingClass,
         isFactory: true,
-        returnStatement: null,
+        returnExpression: null,
+        redirectTarget: null,
       );
 
       check(metadata.isUnnamed).isTrue();
@@ -124,7 +108,7 @@ enum GenericValidationError { missing }
         name: '',
         enclosingClass: enclosingClass,
         isFactory: true,
-        returnStatement: null,
+        returnExpression: null,
       );
 
       check(metadata.isUnnamed).isTrue();

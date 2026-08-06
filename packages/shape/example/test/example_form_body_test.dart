@@ -1,8 +1,7 @@
 import 'package:checks/checks.dart';
+import 'package:shape_example/example_form_body.dart';
 import 'package:shape_starter_kit/shape_starter_kit.dart';
 import 'package:test/test.dart' hide expect;
-
-import 'package:shape_example/example_form_body.dart';
 
 void main() {
   group('ExampleFormBody', () {

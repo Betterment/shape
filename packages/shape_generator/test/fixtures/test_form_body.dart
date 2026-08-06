@@ -1,30 +1,26 @@
-// ignore_for_file: avoid_returning_null
 import 'package:shape/shape.dart';
 
 part 'test_form_body.g.dart';
 
 @GenerateFormBody()
-abstract class TestFormBody extends FormBody<TestFormErrors>
-    with _$TestFormBodyFields {
+abstract class TestFormBody extends FormBody with _$TestFormBodyFields {
+  const TestFormBody._();
+
   factory TestFormBody({
     required String stringField,
     required String intField,
     required Object? nullableField,
-  }) {
-    return _$TestFormBody(
-      stringField: NonEmptyStringFormField(rawValue: stringField),
-      intField: ValidIntFormField(rawValue: intField),
-      nullableField: NullableFormField<Object?>(rawValue: nullableField),
-    );
-  }
-
-  const TestFormBody._();
+  }) => _$TestFormBody(
+    stringField: NonEmptyStringFormField(rawValue: stringField),
+    intField: ValidIntFormField(rawValue: intField),
+    nullableField: NullableFormField<Object?>(rawValue: nullableField),
+  );
 }
 
 enum TestValidationError { empty }
 
 class NonEmptyStringFormField
-    extends FormField<String, String, TestValidationError> {
+    extends SimpleFormField<String, TestValidationError> {
   NonEmptyStringFormField({required String rawValue}) : super(rawValue);
 
   @override
@@ -56,8 +52,8 @@ class ValidIntFormField extends FormField<String, int?, TestValidationError> {
   }
 }
 
-class NullableFormField<T> extends FormField<T?, T?, TestValidationError> {
-  NullableFormField({required T rawValue}) : super(rawValue);
+class NullableFormField<T> extends SimpleFormField<T?, TestValidationError> {
+  NullableFormField({required T? rawValue}) : super(rawValue);
 
   @override
   T? get value => rawValue;

@@ -27,7 +27,7 @@ enum GenericValidationError {
 /// print(field2.validate()); // GenericValidationError.missing
 /// ```
 /// {@endtemplate}
-class GenericFormField<T> extends FormField<T, T, GenericValidationError> {
+class GenericFormField<T> extends SimpleFormField<T, GenericValidationError> {
   /// {@macro generic_form_field}
   const GenericFormField(super.rawValue, {this.isRequired = false});
 

@@ -4,14 +4,9 @@ import 'package:shape_starter_kit/shape_starter_kit.dart';
 part 'example_form_body.g.dart';
 
 @GenerateFormBody()
-abstract class ExampleFormBody extends FormBody<ExampleFormErrors>
-    with _$ExampleFormBodyFields {
-  factory ExampleFormBody({required String? name, int? age}) {
-    return _$ExampleFormBody(
-      name: GenericFormField(name, isRequired: true),
-      age: GenericFormField(age),
-    );
-  }
-
+abstract class ExampleFormBody extends FormBody with _$ExampleFormBodyFields {
   const ExampleFormBody._();
+
+  factory ExampleFormBody({@FieldRequired() String? name, int? age}) =
+      _$ExampleFormBody;
 }
