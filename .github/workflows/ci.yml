@@ -115,7 +115,7 @@ jobs:
           fi
 
           if [ "${{ matrix.name }}" = "shape" ]; then
-            cd "${{ matrix.directory }}"
+            cd "${{ matrix.directory }}" || exit
             ../../tool/verify_pub_score.sh "$MIN_SCORE"
           else
             tool/verify_pub_score_workspace.sh "$MIN_SCORE" "${{ matrix.directory }}"
