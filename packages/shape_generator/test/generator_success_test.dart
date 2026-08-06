@@ -152,15 +152,11 @@ class TrimmedStringFormField extends SimpleFormField<String?, Object?> {
       check(result.generated!.contains('requireNames')).isFalse();
       // copyWith must call the generated factory with FormField instances so
       // user-factory-only params like requireNames are not required.
-      check(
-        result.generated!,
-      ).contains('_\$OptionalRawCustomWrapperFormBody(');
+      check(result.generated!).contains('_\$OptionalRawCustomWrapperFormBody(');
       check(result.generated!).contains(
         '? _instance._firstName : firstName! as TrimmedStringFormField',
       );
-      check(result.generated!).contains(
-        'ignore_for_file: unused_element',
-      );
+      check(result.generated!).contains('ignore_for_file: unused_element');
     });
 
     test('supports redirecting factory constructors', () async {
