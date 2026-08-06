@@ -87,13 +87,10 @@ $genericFormFieldSource
       ).isFalse();
     });
 
-    test(
-      'marks non-nullable custom FormField params as required '
-      'even when the raw factory params are optional',
-      () async {
-        final result = await runShapeGenerator(
-          source:
-              '''
+    test('marks non-nullable custom FormField params as required '
+        'even when the raw factory params are optional', () async {
+      final result = await runShapeGenerator(
+        source: '''
 import 'package:shape/shape.dart';
 
 part 'form_body.g.dart';
@@ -140,21 +137,20 @@ class TrimmedStringFormField extends SimpleFormField<String?, Object?> {
   }
 }
 ''',
-          className: 'OptionalRawCustomWrapperFormBody',
-        );
+        className: 'OptionalRawCustomWrapperFormBody',
+      );
 
-        check(result.succeeded).isTrue();
-        check(result.generated!).contains(
-          'required TrimmedStringFormField firstName',
-        );
-        check(result.generated!).contains(
-          'required TrimmedStringFormField lastName',
-        );
-        // requireNames is only used when constructing wrappers in the user
-        // factory; it must not become a generated form field.
-        check(result.generated!.contains('requireNames')).isFalse();
-      },
-    );
+      check(result.succeeded).isTrue();
+      check(
+        result.generated!,
+      ).contains('required TrimmedStringFormField firstName');
+      check(
+        result.generated!,
+      ).contains('required TrimmedStringFormField lastName');
+      // requireNames is only used when constructing wrappers in the user
+      // factory; it must not become a generated form field.
+      check(result.generated!.contains('requireNames')).isFalse();
+    });
 
     test('supports redirecting factory constructors', () async {
       final result = await runShapeGenerator(
