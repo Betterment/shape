@@ -362,7 +362,7 @@ Expression found was: "$expression".''');
 
     for (var i = 0; i < formBodyArguments.length; i++) {
       final formBodyArgument = formBodyArguments[i];
-      if (formBodyArgument is! NamedArgument) {
+      if (formBodyArgument is! NamedExpression) {
         throw Exception(
           '''
 The argument at index $i in the "$generatedFormBodyClassName" construction
@@ -378,7 +378,7 @@ Argument found: "$formBodyArgument" (of type ${formBodyArgument.runtimeType})'''
         );
       }
 
-      final formFieldName = formBodyArgument.name.lexeme;
+      final formFieldName = formBodyArgument.name.label.name;
       if (formFieldName.startsWith('_')) {
         throw Exception('''
 The form field with name "$formFieldName" is not a valid identifier.
@@ -393,7 +393,7 @@ not start with an underscore.
 Form field name found: "$formFieldName"''');
       }
 
-      final argumentExpression = formBodyArgument.argumentExpression;
+      final argumentExpression = formBodyArgument.expression;
       final factoryParameter = factoryParameters[formFieldName];
       if (factoryParameter == null) {
         throw Exception(
