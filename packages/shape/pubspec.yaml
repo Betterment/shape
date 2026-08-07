@@ -10,7 +10,7 @@ environment:
 
 dependencies:
   equatable: ^2.1.0
-  meta: ^1.19.0
+  meta: ^1.15.0
 
 dev_dependencies:
   checks: ^0.3.1
