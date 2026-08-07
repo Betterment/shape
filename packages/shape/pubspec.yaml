@@ -9,7 +9,6 @@ environment:
   sdk: '>=3.12.2 <4.0.0'
 
 dependencies:
-  equatable: ^2.1.0
   meta: ^1.15.0
 
 dev_dependencies:
