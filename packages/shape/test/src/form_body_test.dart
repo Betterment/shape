@@ -3,7 +3,7 @@ import 'package:checks/checks.dart';
 import 'package:shape/shape.dart';
 import 'package:test/test.dart' hide expect;
 
-class TestFormBody extends FormBody<TestFormErrors> with EquatableMixin {
+class TestFormBody extends FormBody<TestFormErrors> with Equatable {
   const TestFormBody();
 
   @override
