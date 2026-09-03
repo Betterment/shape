@@ -6,6 +6,29 @@ on:
       - main
 
 jobs:
+  validate_pr_title:
+    name: Validate Semantic PR Title
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    steps:
+      - name: Validate PR title
+        uses: amannn/action-semantic-pull-request@48f256284bd46cdaab1048c3721360e808335d50 # v6.1.1
+        with:
+          types: |
+            feat
+            fix
+            docs
+            style
+            refactor
+            test
+            ci
+            chore
+            revert
+          validateSingleCommit: false
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
   build:
     runs-on: ubuntu-latest
     outputs:
