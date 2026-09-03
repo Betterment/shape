@@ -7,7 +7,7 @@ workspace:
   - packages/shape_generator
 
 environment:
-  sdk: ^3.7.2
+  sdk: ^3.9.0
 
 dev_dependencies:
   lints: ^5.1.1

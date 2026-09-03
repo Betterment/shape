@@ -1,7 +1,6 @@
 import 'package:analyzer/dart/element/element.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:analyzer/dart/element/type_visitor.dart';
-import 'package:analyzer/dart/element/visitor.dart';
 import 'package:meta/meta.dart';
 
 /// {@template client_class_metadata}
@@ -35,9 +34,6 @@ class ClientClassMetadata {
       throw Exception('Expected a ClassElement.');
     }
 
-    final classVisitor = _DefaultClassVisitor();
-    element.visitChildren(classVisitor);
-
     final typeVisitor = _DefaultTypeVisitor();
     element.thisType.accept(typeVisitor);
 
@@ -49,12 +45,26 @@ class ClientClassMetadata {
       isEnum: element is EnumElement,
       isMixin: element is MixinElement,
       constructors:
-          classVisitor.constructors
-              .where((constructor) => !constructor.isSynthetic)
+          element.constructors
+              .where((constructor) => !constructor.isOriginImplicitDefault)
               .toList(),
-      fields: classVisitor.fields,
-      methods: classVisitor.methods,
-      typeParameters: classVisitor.typeParameters,
+      fields: {
+        for (final field in element.fields)
+          if (field.name != null) field.name!: field.type,
+      },
+      methods: [
+        for (final method in element.methods)
+          if (method.name != null)
+            ClientClassMethodMetadata._(
+              name: method.name!,
+              returnType: method.returnType,
+              parameters: method.formalParameters,
+              isAbstract: method.isAbstract,
+              isStatic: method.isStatic,
+              hasOverride: method.metadata.hasOverride,
+            ),
+      ],
+      typeParameters: element.typeParameters,
     );
   }
 
@@ -140,7 +150,7 @@ class ClientClassMethodMetadata {
   final DartType returnType;
 
   /// The parameters of the method.
-  final List<ParameterElement> parameters;
+  final List<FormalParameterElement> parameters;
 
   /// Indicates whether the method is abstract.
   final bool isAbstract;
@@ -161,47 +171,6 @@ class ClientClassMethodMetadata {
         'isStatic: $isStatic, '
         'hasOverride: $hasOverride'
         ')';
-  }
-}
-
-class _DefaultClassVisitor extends SimpleElementVisitor<dynamic> {
-  final constructors = <ConstructorElement>[];
-  final fields = <String, DartType>{};
-  final methods = <ClientClassMethodMetadata>[];
-  final typeParameters = <TypeParameterElement>[];
-
-  @override
-  dynamic visitConstructorElement(ConstructorElement element) {
-    constructors.add(element);
-    return super.visitConstructorElement(element);
-  }
-
-  @override
-  dynamic visitFieldElement(FieldElement element) {
-    fields[element.name] = element.type;
-
-    return super.visitFieldElement(element);
-  }
-
-  @override
-  dynamic visitTypeParameterElement(TypeParameterElement element) {
-    typeParameters.add(element);
-    return super.visitTypeParameterElement(element);
-  }
-
-  @override
-  dynamic visitMethodElement(MethodElement element) {
-    methods.add(
-      ClientClassMethodMetadata._(
-        name: element.name,
-        returnType: element.returnType,
-        parameters: element.parameters,
-        isAbstract: element.isAbstract,
-        isStatic: element.isStatic,
-        hasOverride: element.hasOverride,
-      ),
-    );
-    return super.visitMethodElement(element);
   }
 }
 

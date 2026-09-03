@@ -101,10 +101,14 @@ $e
           kFormBodyBaseClassName,
         );
     final hasNamelessFactoryConstructor = classMetadata.constructors.any(
-      (c) => c.name == '' && c.isFactory,
+      (c) => (c.name == null || c.name == '' || c.name == 'new') && c.isFactory,
     );
     final hasPrivateConstructor = classMetadata.constructors.any(
-      (c) => c.isPrivate && c.name == '_' && c.isConst && c.parameters.isEmpty,
+      (c) =>
+          c.isPrivate &&
+          c.name == '_' &&
+          c.isConst &&
+          c.formalParameters.isEmpty,
     );
 
     final validateMethodOverrides = classMetadata.methods.where(
@@ -207,7 +211,7 @@ that returns an instance of "${generatedClassNames.generatedFormBodyClassName}".
     final result = [
       for (var i = 0; i < classMetadata.constructors.length; i++)
         ClientConstructorMetadata(
-          name: classMetadata.constructors[i].name,
+          name: classMetadata.constructors[i].name ?? '',
           enclosingClass: classMetadata.constructors[i].returnType,
           isFactory: classMetadata.constructors[i].isFactory,
           returnStatement: constructorReturnStatements[i],
@@ -224,7 +228,7 @@ that returns an instance of "${generatedClassNames.generatedFormBodyClassName}".
     final result = <ConstructorDeclaration>[];
     for (final constructor in constructors) {
       final astNode = await buildStep.resolver.astNodeFor(
-        constructor,
+        constructor.firstFragment,
         resolve: true,
       );
       final visitor = _ConstructorAstVisitor();

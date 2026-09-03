@@ -10,7 +10,7 @@ environment:
 resolution: workspace
 
 dependencies:
-  equatable: ^2.0.2
+  equatable: ^2.1.0
   meta: ^1.9.1
 
 dev_dependencies:
