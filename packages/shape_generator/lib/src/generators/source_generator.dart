@@ -128,6 +128,7 @@ class SourceBuffer {
     required String functionName,
     List<FunctionParameter> parameters = const [],
     bool isOverride = false,
+    bool useNamedParameters = true,
   }) {
     _writeDocumentation(documentation);
 
@@ -136,13 +137,12 @@ class SourceBuffer {
     }
     if (parameters.isEmpty) {
       _writeln('$returnType $functionName()');
-    } else {
+    } else if (useNamedParameters) {
       _writeln('$returnType $functionName({');
       for (final parameter in parameters) {
-        final defaultValueClause =
-            parameter.defaultValue == null
-                ? ''
-                : ' = ${parameter.defaultValue}';
+        final defaultValueClause = parameter.defaultValue == null
+            ? ''
+            : ' = ${parameter.defaultValue}';
         if (parameter.isRequired) {
           _writeln(
             '''$_required ${parameter.type} ${parameter.name}$defaultValueClause,''',
@@ -152,6 +152,11 @@ class SourceBuffer {
         }
       }
       _writeln('})');
+    } else {
+      final parameterList = parameters
+          .map((parameter) => '${parameter.type} ${parameter.name}')
+          .join(', ');
+      _writeln('$returnType $functionName($parameterList)');
     }
   }
 
@@ -199,8 +204,9 @@ class SourceBuffer {
     String constructorName = '_',
     List<FunctionParameter> parameters = const [],
   }) {
-    final fullFactoryName =
-        factoryName.isEmpty ? className : '$className.$factoryName';
+    final fullFactoryName = factoryName.isEmpty
+        ? className
+        : '$className.$factoryName';
     final parameterNames = parameters.map((p) => p.name);
 
     writeSingleReturnFunction(
@@ -234,8 +240,9 @@ class SourceBuffer {
 
     _writeDocumentation(documentation);
 
-    final fullConstructorName =
-        constructorName.isEmpty ? className : '$className.$constructorName';
+    final fullConstructorName = constructorName.isEmpty
+        ? className
+        : '$className.$constructorName';
     final privateInstanceParameterNames = parameters.map(
       (p) => 'this.${p.name},',
     );
@@ -267,7 +274,6 @@ class SourceBuffer {
 
     if (supertypeConstructorName != null) {
       _writeln(
-        // ignore: missing_whitespace_between_adjacent_strings
         ''' : super.$supertypeConstructorName(${!passParametersToSuper ? '' : privateInstanceParameterNames.join()})''',
       );
     }
@@ -358,6 +364,7 @@ class SourceBuffer {
     required String functionName,
     List<FunctionParameter> parameters = const [],
     bool isOverride = false,
+    bool useNamedParameters = true,
   }) {
     writeFunctionSignature(
       documentation: documentation,
@@ -365,6 +372,7 @@ class SourceBuffer {
       functionName: functionName,
       parameters: parameters,
       isOverride: isOverride,
+      useNamedParameters: useNamedParameters,
     );
     _writeln(' {');
   }
@@ -442,6 +450,65 @@ class SourceBuffer {
   /// Writes the end of a `mixin` declaration.
   void writeMixinDeclarationEnd() {
     _writeln('}');
+  }
+
+  /// Writes a factory constructor with a custom body.
+  void writeFactoryConstructorBody({
+    required String className,
+    List<FunctionParameter> parameters = const [],
+    required String body,
+  }) {
+    writeFunctionStart(
+      returnType: 'factory',
+      functionName: className,
+      parameters: parameters,
+    );
+    _writeln(body);
+    writeFunctionEnd();
+  }
+
+  /// Writes [operator ==] and [hashCode] based on [equalityFields].
+  void writeEqualityOperators({
+    required String className,
+    required List<String> equalityFields,
+  }) {
+    if (equalityFields.isEmpty) {
+      writeSingleReturnFunction(
+        returnType: 'bool',
+        functionName: 'operator ==',
+        parameters: [const FunctionParameter(type: 'Object', name: 'other')],
+        returnValue: 'identical(this, other)',
+        isOverride: true,
+      );
+      writeClassGetter(
+        type: 'int',
+        name: 'hashCode',
+        value: 'identityHashCode(this)',
+        isOverride: true,
+      );
+      return;
+    }
+
+    writeFunctionStart(
+      returnType: 'bool',
+      functionName: 'operator ==',
+      parameters: [const FunctionParameter(type: 'Object', name: 'other')],
+      isOverride: true,
+      useNamedParameters: false,
+    );
+    _writeln('return other is $className');
+    for (final field in equalityFields) {
+      _writeln('&& other.$field == $field');
+    }
+    _writeln(';');
+    writeFunctionEnd();
+
+    writeClassGetter(
+      type: 'int',
+      name: 'hashCode',
+      value: 'Object.hash(${equalityFields.map((field) => field).join(', ')})',
+      isOverride: true,
+    );
   }
 }
 

@@ -16,22 +16,17 @@ A full example might look like this:
 
 ```dart
 import 'package:shape/shape.dart';
-import 'package:shape_addons/shape_addons.dart';
+import 'package:shape_starter_kit/shape_starter_kit.dart';
 
 part 'example_form_body.g.dart';
 
 @GenerateFormBody()
-abstract class ExampleFormBody with _$ExampleFormBodyFields {
+abstract class ExampleFormBody extends FormBody with _$ExampleFormBodyFields {
+  const ExampleFormBody._();
+
   factory ExampleFormBody({
-    required String? foo,
-  }) {
-    return _$ExampleFormBody(
-      name: GenericFormField<String?>(
-        value: foo,
-        isRequired: true,
-      ),
-    );
-  }
+    @FieldRequired() String? foo,
+  }) = _$ExampleFormBody;
 }
 
 void main() {

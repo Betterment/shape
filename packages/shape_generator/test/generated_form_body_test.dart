@@ -97,7 +97,9 @@ void main() {
           intField: '123',
           nullableField: const Object(),
         );
-        final actual = subject.copyWith(stringField: 'def');
+        final actual = subject.copyWith(
+          stringField: NonEmptyStringFormField(rawValue: 'def'),
+        );
         final checked = buildSubject(
           stringField: 'def',
           intField: '123',
@@ -113,7 +115,9 @@ void main() {
           intField: '123',
           nullableField: 'xyz',
         );
-        final actual = subject.copyWith(nullableField: null);
+        final actual = subject.copyWith(
+          nullableField: NullableFormField<Object?>(rawValue: null),
+        );
         final checked = buildSubject(
           stringField: 'abc',
           intField: '123',
@@ -131,9 +135,7 @@ void main() {
           intField: '123',
           nullableField: const Object(),
         ).toString,
-      ).returnsNormally().equals(
-        r"_$TestFormBody(abc, 123, Instance of 'Object')",
-      );
+      ).returnsNormally().equals(r"Instance of '_$TestFormBody'");
     });
   });
 
@@ -266,9 +268,7 @@ void main() {
           intField: null,
           nullableField: TestValidationError.empty,
         ).toString,
-      ).returnsNormally().equals(
-        '''TestFormErrors(TestValidationError.empty, null, TestValidationError.empty)''',
-      );
+      ).returnsNormally().equals("Instance of 'TestFormErrors'");
     });
   });
 }

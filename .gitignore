@@ -8,3 +8,6 @@ build/
 pubspec.lock
 coverage/
 **/pubspec_overrides.yaml
+
+# FVM Version Cache
+.fvm/

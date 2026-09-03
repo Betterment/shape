@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:analyzer/dart/ast/ast.dart';
 import 'package:analyzer/dart/ast/visitor.dart';
 import 'package:analyzer/dart/element/element.dart';
+import 'package:analyzer/dart/element/nullability_suffix.dart';
 import 'package:analyzer/dart/element/type.dart';
 import 'package:build/build.dart';
 import 'package:shape/shape.dart';
@@ -13,6 +14,11 @@ import 'package:source_gen/source_gen.dart';
 
 /// The [Generator] for Shape.
 class ShapeGenerator extends GeneratorForAnnotation<GenerateFormBody> {
+  static const _fieldRequiredChecker = TypeChecker.typeNamed(
+    FieldRequired,
+    inPackage: 'shape',
+  );
+
   @override
   FutureOr<String> generateForAnnotatedElement(
     Element element,
@@ -30,7 +36,12 @@ class ShapeGenerator extends GeneratorForAnnotation<GenerateFormBody> {
       formBodyClassName: classMetadata.name,
     );
 
-    final buffer = SourceBuffer();
+    final buffer = SourceBuffer()
+      ..writeComment(
+        'ignore_for_file: unused_element, '
+        'cast_nullable_to_non_nullable, '
+        'prefer_const_constructors_in_immutables',
+      );
 
     try {
       FormBodyGenerator(
@@ -56,7 +67,7 @@ class ShapeGenerator extends GeneratorForAnnotation<GenerateFormBody> {
       return buffer.dump();
     } catch (e) {
       throw Exception('''
-An unknown error occurred while generating the form body for "${element.name}".
+An unknown error occurred while generating the form body for "${element.name ?? '<unnamed>'}".
 Please make sure your class is valid and try again.
 
 If this issue keeps occurring please report an issue at
@@ -97,14 +108,16 @@ $e
     final isAbstract = classMetadata.isAbstract;
     final extendsFormBody =
         classMetadata.supertype != null &&
-        classMetadata.supertype!.nonNullableDisplayString.startsWith(
-          kFormBodyBaseClassName,
-        );
-    final hasNamelessFactoryConstructor = classMetadata.constructors.any(
-      (c) => c.name == '' && c.isFactory,
+        classMetadata.supertype!.nonNullableDisplayString ==
+            kFormBodyBaseClassName;
+    final hasGenerativeConstructor = classMetadata.constructors.any(
+      (constructor) =>
+          !constructor.isFactory &&
+          constructor.name == '_' &&
+          constructor.formalParameters.isEmpty,
     );
-    final hasPrivateConstructor = classMetadata.constructors.any(
-      (c) => c.isPrivate && c.name == '_' && c.isConst && c.parameters.isEmpty,
+    final hasNamelessFactoryConstructor = classMetadata.constructors.any(
+      (c) => (c.name == null || c.name == '' || c.name == 'new') && c.isFactory,
     );
 
     final validateMethodOverrides = classMetadata.methods.where(
@@ -116,8 +129,8 @@ $e
     final isValid =
         isAbstract &&
         extendsFormBody &&
+        hasGenerativeConstructor &&
         hasNamelessFactoryConstructor &&
-        hasPrivateConstructor &&
         hasValidValidateMethod;
 
     if (!isValid) {
@@ -127,13 +140,9 @@ The class "${classMetadata.name}" is not a valid form body.
 Please make sure your form body class:
 ${isAbstract ? '✅' : '❌'} is abstract.
 ${extendsFormBody ? '✅' : '❌'} extends ${generatedClassNames.extendingFormBodyClassName}.
+${hasGenerativeConstructor ? '✅' : '❌'} has a private parameterless generative constructor ("const ${classMetadata.name}._();").
 ${hasNamelessFactoryConstructor ? '✅' : '❌'} has a nameless factory constructor that returns a "${generatedClassNames.generatedFormBodyClassName}".
-${hasPrivateConstructor ? '✅' : '❌'} has a private const constructor ("const ${classMetadata.name}._()").
 ${hasValidValidateMethod ? '✅' : '❌'} has no validate method OR a single validate method that returns a "${generatedClassNames.generatedFormErrorsClassName}".
-
-❗️❗️❗️
-Additionally, make sure the form body class mixes in the ${generatedClassNames.generatedFormBodyFieldsMixinName} mixin.
-❗️❗️❗️
 ''');
     }
   }
@@ -191,26 +200,23 @@ that returns an instance of "${generatedClassNames.generatedFormBodyClassName}".
       buildStep,
     );
 
-    final constructorBodies = [
-      for (final constructorDeclarationNodes in constructorDeclarationNodes)
-        _getConstructorBody(constructorDeclarationNodes),
+    final constructorReturnExpressions = [
+      for (final constructorDeclaration in constructorDeclarationNodes)
+        _getReturnExpression(constructorDeclaration),
     ];
-
-    final constructorReturnStatements = [
-      for (final constructorBody in constructorBodies)
-        if (constructorBody == null)
-          null
-        else
-          _getReturnStatement(constructorBody),
+    final constructorRedirectTargetNames = [
+      for (final constructorDeclaration in constructorDeclarationNodes)
+        _getRedirectTargetName(constructorDeclaration),
     ];
-
     final result = [
       for (var i = 0; i < classMetadata.constructors.length; i++)
         ClientConstructorMetadata(
-          name: classMetadata.constructors[i].name,
+          name: classMetadata.constructors[i].name ?? 'new',
           enclosingClass: classMetadata.constructors[i].returnType,
           isFactory: classMetadata.constructors[i].isFactory,
-          returnStatement: constructorReturnStatements[i],
+          returnExpression: constructorReturnExpressions[i],
+          redirectTarget: classMetadata.constructors[i].redirectedConstructor,
+          redirectTargetName: constructorRedirectTargetNames[i],
         ),
     ];
 
@@ -224,7 +230,7 @@ that returns an instance of "${generatedClassNames.generatedFormBodyClassName}".
     final result = <ConstructorDeclaration>[];
     for (final constructor in constructors) {
       final astNode = await buildStep.resolver.astNodeFor(
-        constructor,
+        constructor.firstFragment,
         resolve: true,
       );
       final visitor = _ConstructorAstVisitor();
@@ -237,30 +243,44 @@ that returns an instance of "${generatedClassNames.generatedFormBodyClassName}".
     return result;
   }
 
-  BlockFunctionBody? _getConstructorBody(ConstructorDeclaration declaration) {
+  String? _getRedirectTargetName(ConstructorDeclaration declaration) {
+    final redirect = declaration.redirectedConstructor;
+    if (redirect == null) {
+      return null;
+    }
+
+    return redirect.type.name.lexeme;
+  }
+
+  Expression? _getReturnExpression(ConstructorDeclaration declaration) {
+    if (declaration.redirectedConstructor != null) {
+      return null;
+    }
+
     for (final childEntity in declaration.childEntities) {
       if (childEntity is BlockFunctionBody) {
-        return childEntity;
+        for (final statement in childEntity.block.statements) {
+          if (statement is ReturnStatement) {
+            return statement.expression;
+          }
+        }
+      }
+      if (childEntity is ExpressionFunctionBody) {
+        return childEntity.expression;
       }
     }
 
     return null;
   }
 
-  ReturnStatement _getReturnStatement(BlockFunctionBody body) {
-    for (final childEntity in body.block.statements) {
-      if (childEntity is ReturnStatement) {
-        return childEntity;
-      }
-    }
-
-    throw Exception('No return statement found in body. "$body"');
-  }
-
   Future<List<FormBodyFieldMetadata>> _getFormBodyFieldMetadata(
     Element element,
     BuildStep buildStep,
   ) async {
+    if (element is! ClassElement) {
+      throw Exception('Expected a ClassElement.');
+    }
+
     final classMetadata = ClientClassMetadata.fromElement(element);
     final generatedClassNames = GeneratedClassNames(
       formBodyClassName: classMetadata.name,
@@ -271,11 +291,20 @@ that returns an instance of "${generatedClassNames.generatedFormBodyClassName}".
       buildStep,
     ).then((results) => results.firstWhere((c) => c.isValid));
 
-    final returnStatement = constructorMetadata.returnStatement;
+    final returnExpression = constructorMetadata.returnExpression;
+    if (constructorMetadata.redirectTarget != null ||
+        constructorMetadata.redirectTargetName != null) {
+      return _buildFieldsFromFactoryParameters(
+        element: element,
+        buildStep: buildStep,
+        classMetadata: classMetadata,
+        generatedClassNames: generatedClassNames,
+      );
+    }
 
-    // TODO(jeroen-meijer): Support identifiers and other value references
-    final expression = returnStatement!.expression;
-    if (expression is! MethodInvocation) {
+    final expression = returnExpression;
+    if (expression is! MethodInvocation &&
+        expression is! InstanceCreationExpression) {
       throw Exception('''
 No method invocation found in return statement.
 
@@ -287,23 +316,14 @@ by a constructor invocation of the form body class.
 Please make sure your return statement looks like the following:
 
   return ${generatedClassNames.generatedFormBodyClassName}(
-    foo: FooFormField(
-      value: 'abc',
-    ),
-    bar: BarFormField(
-      value: 123,
-    ),
-  );
-
-It is allowed, however, to refer to form fields by variable name, like the
-following:
-
-  final foo = FooFormField(value: 'abc');
-  final bar = BarFormField(value: 123);
-
-  return ${generatedClassNames.generatedFormBodyClassName}(
     foo: foo,
     bar: bar,
+  );
+
+For custom form fields, pass a form field constructor invocation:
+
+  return ${generatedClassNames.generatedFormBodyClassName}(
+    foo: FooFormField(rawValue: foo),
   );
 
 -----------------------------------------------
@@ -311,20 +331,34 @@ following:
 Expression found was: "$expression".''');
     }
 
-    final invocation = expression;
-    final generatedFormBodyClassName = invocation.methodName;
+    final generatedFormBodyClassName = expression is MethodInvocation
+        ? expression.methodName
+        : (expression as InstanceCreationExpression).constructorName.name!;
     assert(
       generatedFormBodyClassName.name ==
-          constructorMetadata.returnStatementType.name,
+          constructorMetadata.returnExpressionTypeName,
     );
     assert(
       generatedFormBodyClassName.name ==
           generatedClassNames.generatedFormBodyClassName,
     );
 
-    final result = <FormBodyFieldMetadata>[];
+    final factoryConstructor = classMetadata.constructors.firstWhere(
+      (constructor) =>
+          (constructor.name == null ||
+              constructor.name == '' ||
+              constructor.name == 'new') &&
+          constructor.isFactory,
+    );
+    final factoryParameters = {
+      for (final parameter in factoryConstructor.formalParameters)
+        if (parameter.name != null) parameter.name!: parameter,
+    };
 
-    final formBodyArguments = invocation.argumentList.arguments;
+    final result = <FormBodyFieldMetadata>[];
+    final formBodyArguments = expression is MethodInvocation
+        ? expression.argumentList.arguments
+        : (expression as InstanceCreationExpression).argumentList.arguments;
 
     for (var i = 0; i < formBodyArguments.length; i++) {
       final formBodyArgument = formBodyArguments[i];
@@ -336,8 +370,7 @@ is not a named argument.
 
 -----------------------------------------------
 
-Please make sure that all arguments are named
-parameters.
+Please make sure that all arguments are named parameters.
 
 -----------------------------------------------
 
@@ -345,10 +378,10 @@ Argument found: "$formBodyArgument" (of type ${formBodyArgument.runtimeType})'''
         );
       }
 
-      final formFieldIdentifier = formBodyArgument.name.label;
-      if (formFieldIdentifier.name.startsWith('_')) {
+      final formFieldName = formBodyArgument.name.label.name;
+      if (formFieldName.startsWith('_')) {
         throw Exception('''
-The form field with name "$formFieldIdentifier" is not a valid identifier.
+The form field with name "$formFieldName" is not a valid identifier.
 
 -----------------------------------------------
 
@@ -357,22 +390,143 @@ not start with an underscore.
 
 -----------------------------------------------
 
-Form field name found: "$formFieldIdentifier"''');
+Form field name found: "$formFieldName"''');
       }
 
-      final formFieldCreationExpression = formBodyArgument.expression;
-      final formFieldExpressionType = formFieldCreationExpression.staticType;
-      ClassElement? formFieldClassElement;
-
-      final element = formFieldCreationExpression.staticType?.element;
-      if (element is ClassElement) {
-        formFieldClassElement = element;
-      }
-
-      if (formFieldClassElement == null) {
+      final argumentExpression = formBodyArgument.expression;
+      final factoryParameter = factoryParameters[formFieldName];
+      if (factoryParameter == null) {
         throw Exception(
-          '''
-Could not determine the type of the form field with name "$formBodyArgument".
+          'Factory parameter "$formFieldName" was not found on '
+          '"${classMetadata.name}".',
+        );
+      }
+
+      if (argumentExpression is SimpleIdentifier) {
+        result.add(
+          await _buildInferredFormBodyFieldMetadata(
+            element: element,
+            buildStep: buildStep,
+            fieldName: formFieldName,
+            factoryParameter: factoryParameter,
+          ),
+        );
+        continue;
+      }
+
+      if (argumentExpression is MethodInvocation ||
+          argumentExpression is InstanceCreationExpression) {
+        result.add(
+          _buildCustomFormBodyFieldMetadata(
+            fieldName: formFieldName,
+            argumentExpression: argumentExpression,
+            factoryParameter: factoryParameter,
+          ),
+        );
+        continue;
+      }
+
+      throw Exception('''
+Could not determine how to wrap the form field with name "$formFieldName".
+
+Pass either the factory parameter directly for automatic GenericFormField
+wrapping, or a form field constructor invocation for custom validation.
+
+Expression found: "$argumentExpression".''');
+    }
+
+    return result;
+  }
+
+  Future<List<FormBodyFieldMetadata>> _buildFieldsFromFactoryParameters({
+    required ClassElement element,
+    required BuildStep buildStep,
+    required ClientClassMetadata classMetadata,
+    required GeneratedClassNames generatedClassNames,
+  }) async {
+    final factoryConstructor = classMetadata.constructors.firstWhere(
+      (constructor) =>
+          (constructor.name == null ||
+              constructor.name == '' ||
+              constructor.name == 'new') &&
+          constructor.isFactory,
+    );
+
+    final result = <FormBodyFieldMetadata>[];
+    for (final parameter in factoryConstructor.formalParameters) {
+      if (parameter.name == null) {
+        continue;
+      }
+
+      result.add(
+        await _buildInferredFormBodyFieldMetadata(
+          element: element,
+          buildStep: buildStep,
+          fieldName: parameter.name!,
+          factoryParameter: parameter,
+        ),
+      );
+    }
+
+    return result;
+  }
+
+  Future<FormBodyFieldMetadata> _buildInferredFormBodyFieldMetadata({
+    required ClassElement element,
+    required BuildStep buildStep,
+    required String fieldName,
+    required FormalParameterElement factoryParameter,
+  }) async {
+    final genericFormFieldClass = await _findGenericFormFieldClass(
+      element,
+      buildStep,
+    );
+    if (genericFormFieldClass == null) {
+      throw Exception('''
+Could not infer a form field wrapper for "$fieldName".
+
+Import `package:shape_starter_kit/shape_starter_kit.dart` to use automatic
+GenericFormField wrapping, or pass an explicit form field constructor.
+''');
+    }
+
+    final parameterType = factoryParameter.type;
+    final isRequired =
+        factoryParameter.isRequired ||
+        _hasFieldRequiredAnnotation(factoryParameter);
+
+    final wrapperExpression =
+        'GenericFormField<${parameterType.getDisplayString()}>'
+        '($fieldName${isRequired ? ', isRequired: true' : ''})';
+
+    return FormBodyFieldMetadata(
+      fieldName: fieldName,
+      formClassMetadata: ClientClassMetadata.fromElement(genericFormFieldClass),
+      wrapperExpression: wrapperExpression,
+      isFactoryParameterRequired: factoryParameter.isRequired,
+      genericTypeArguments: {
+        if (genericFormFieldClass.typeParameters.isNotEmpty)
+          genericFormFieldClass.typeParameters.first: parameterType,
+      },
+    );
+  }
+
+  FormBodyFieldMetadata _buildCustomFormBodyFieldMetadata({
+    required String fieldName,
+    required Expression argumentExpression,
+    required FormalParameterElement factoryParameter,
+  }) {
+    final formFieldExpressionType = argumentExpression.staticType;
+    ClassElement? formFieldClassElement;
+
+    final expressionElement = formFieldExpressionType?.element;
+    if (expressionElement is ClassElement) {
+      formFieldClassElement = expressionElement;
+    }
+
+    if (formFieldClassElement == null) {
+      throw Exception('''
+Could not determine the type of the form field with name "$fieldName".
 The form field is not a class or a simple identifier.
 
 -----------------------------------------------
@@ -380,74 +534,90 @@ The form field is not a class or a simple identifier.
 Make sure that you have imported all necessary libraries and that the referenced
 form field exists.
 
------------------------------------------------
+Expression found: $argumentExpression''');
+    }
 
-If the form field declaration exists and has been imported, this should be
-considered a bug in the shape_generator package. Please report it.
+    final formFieldClassMetadata = ClientClassMetadata.fromElement(
+      formFieldClassElement,
+      withInstanceType: formFieldExpressionType,
+    );
 
-Expression found: $formFieldCreationExpression (with static type ${formFieldCreationExpression.staticType} and runtime type ${formFieldCreationExpression.runtimeType})''',
-        );
-      }
+    final instanceTypeArguments = <DartType>[];
 
-      final formFieldClassMetadata = ClientClassMetadata.fromElement(
-        formFieldClassElement,
-        withInstanceType: formFieldExpressionType,
-      );
+    if (formFieldClassMetadata.instanceType != null &&
+        formFieldClassMetadata.instanceType is ParameterizedType) {
+      final instanceType =
+          formFieldClassMetadata.instanceType! as ParameterizedType;
+      instanceTypeArguments.addAll(instanceType.typeArguments);
+    }
 
-      final instanceTypeArguments = <DartType>[];
-
-      if (formFieldClassMetadata.instanceType != null &&
-          formFieldClassMetadata.instanceType is ParameterizedType) {
-        final instanceType =
-            formFieldClassMetadata.instanceType! as ParameterizedType;
-        instanceTypeArguments.addAll(instanceType.typeArguments);
-      }
-
-      if (formFieldClassMetadata.typeParameters.length !=
-          instanceTypeArguments.length) {
-        throw Exception(
-          '''
+    if (formFieldClassMetadata.typeParameters.length !=
+        instanceTypeArguments.length) {
+      throw Exception(
+        '''
 The number of type parameters of the form field class "${formFieldClassMetadata.name}"
 does not match the number of type arguments of the instance of the form field.
 
------------------------------------------------
-
-You can try fixing this by explicitly defining the generic type arguments.
-For example, when using a GenericFormField<T> for a String, the type for T can
-be provided as follows:
-
-  MyFormField(
-    someField: GenericType<String>(...),
-  )
-
------------------------------------------------
-
-If the above has already been done, this should be considered a bug in the
-shape_generator package. Please report it.
-
 Type parameters found: "${formFieldClassMetadata.typeParameters}" (length ${formFieldClassMetadata.typeParameters.length})
 Instance type arguments found: "$instanceTypeArguments" (length ${instanceTypeArguments.length})''',
-        );
-      }
-
-      final formBodyFieldMetadata = FormBodyFieldMetadata(
-        fieldIdentifier: formFieldIdentifier,
-        formClassMetadata: formFieldClassMetadata,
-        genericTypeArguments: {
-          for (
-            var i = 0;
-            i < formFieldClassMetadata.typeParameters.length;
-            i++
-          ) ...{
-            formFieldClassMetadata.typeParameters[i]: instanceTypeArguments[i],
-          },
-        },
       );
-
-      result.add(formBodyFieldMetadata);
     }
 
-    return result;
+    return FormBodyFieldMetadata(
+      fieldName: fieldName,
+      formClassMetadata: formFieldClassMetadata,
+      wrapperExpression: argumentExpression.toSource(),
+      isCustomWrapper: true,
+      // Non-nullable FormField params are required here.
+      isFactoryParameterRequired:
+          factoryParameter.isRequired ||
+          formFieldExpressionType!.nullabilitySuffix !=
+              NullabilitySuffix.question,
+      genericTypeArguments: {
+        for (var i = 0; i < formFieldClassMetadata.typeParameters.length; i++)
+          formFieldClassMetadata.typeParameters[i]: instanceTypeArguments[i],
+      },
+    );
+  }
+
+  Future<ClassElement?> _findGenericFormFieldClass(
+    ClassElement element,
+    BuildStep buildStep,
+  ) async {
+    final local = element.library.getClass('GenericFormField');
+    if (local != null) {
+      return local;
+    }
+
+    for (final imported in element.library.firstFragment.importedLibraries) {
+      final genericFormField = imported.getClass('GenericFormField');
+      if (genericFormField != null) {
+        return genericFormField;
+      }
+    }
+
+    for (final uri in const [
+      'package:shape_starter_kit/shape_starter_kit.dart',
+      'package:shape_starter_kit/src/form_fields/generic_form_field.dart',
+    ]) {
+      try {
+        final library = await buildStep.resolver.libraryFor(
+          AssetId.resolve(Uri.parse(uri), from: buildStep.inputId),
+        );
+        final genericFormField = library.getClass('GenericFormField');
+        if (genericFormField != null) {
+          return genericFormField;
+        }
+      } on Object {
+        continue;
+      }
+    }
+
+    return null;
+  }
+
+  bool _hasFieldRequiredAnnotation(FormalParameterElement parameter) {
+    return _fieldRequiredChecker.hasAnnotationOfExact(parameter);
   }
 }
 

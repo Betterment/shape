@@ -7,7 +7,11 @@ on:
 
 jobs:
   semantic_pull_request:
-    uses: VeryGoodOpenSource/very_good_workflows/.github/workflows/semantic_pull_request.yml@fb76d33002e1a5c6bc7c0ee9ba2b5ff2d9908a00 # v1.17
+    runs-on: ubuntu-latest
+    steps:
+      - uses: amannn/action-semantic-pull-request@e32d7e603df1aa1ba07e981f2a23455dee596825 # v5
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   build:
     runs-on: ubuntu-latest
@@ -35,7 +39,7 @@ jobs:
         run: |
           dart pub global activate coverage
           melos exec --dir-exists="test" -- "dart test --coverage=coverage"
-          melos exec --dir-exists="test" -- "dart pub global run coverage:format_coverage --lcov --in=coverage --out=coverage/lcov.info --report-on=lib"
+          melos exec --dir-exists="test" -- "dart pub global run coverage:format_coverage --lcov --in=coverage --out=coverage/lcov.info --package=. --report-on=lib"
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@v4
@@ -46,21 +50,14 @@ jobs:
       - name: Generate Coverage Matrix
         id: coverage-matrix
         run: |
-          # Get packages that have tests
-          packages=$(melos list --dir-exists="test")
-
-          # Create JSON array of objects with name and path
-          matrix_json="["
-          first=true
-          for package in $packages; do
-            if [ "$first" = true ]; then
-              first=false
-            else
-              matrix_json+=","
-            fi
-            matrix_json+="{\"name\":\"$package\",\"path\":\"packages/$package/coverage/lcov.info\"}"
-          done
-          matrix_json+="]"
+          matrix_json="$(melos list --dir-exists="test" --json | jq -c --arg root "$PWD" '
+            [.[] | {
+              name: .name,
+              private: .private,
+              directory: (.location | ltrimstr($root + "/")),
+              path: ((.location | ltrimstr($root + "/")) + "/coverage/lcov.info")
+            }]
+          ')"
 
           echo "matrix=$matrix_json" >> "$GITHUB_OUTPUT"
           echo "Generated coverage matrix: $matrix_json"
@@ -81,13 +78,12 @@ jobs:
           name: coverage
           path: packages/
 
-      - name: Inspect directories
-        run: ls -R packages/
-
       - name: Check Code Coverage
+        if: ${{ !matrix.private }}
         uses: VeryGoodOpenSource/very_good_coverage@c953fca3e24a915e111cc6f55f03f756dcb3964c # v3
         with:
           path: ${{ matrix.path }}
+          min_coverage: 80
 
   check_pana:
     needs: build
@@ -111,6 +107,16 @@ jobs:
         run: dart pub global activate pana
 
       - name: Verify Pub Score
+        if: ${{ !matrix.private }}
         run: |
-          cd "packages/${{ matrix.name }}" || exit 1
-          ../../tool/verify_pub_score.sh "$(cat PANA_SCORE)"
+          MIN_SCORE=""
+          if [ -f "${{ matrix.directory }}/PANA_SCORE" ]; then
+            MIN_SCORE="$(cat "${{ matrix.directory }}/PANA_SCORE")"
+          fi
+
+          if [ "${{ matrix.name }}" = "shape" ]; then
+            cd "${{ matrix.directory }}" || exit
+            ../../tool/verify_pub_score.sh "$MIN_SCORE"
+          else
+            tool/verify_pub_score_workspace.sh "$MIN_SCORE" "${{ matrix.directory }}"
+          fi

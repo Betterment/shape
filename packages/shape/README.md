@@ -8,6 +8,7 @@ A package for building forms that can be easily reused, validated, and parsed, p
     - [Table of Contents](#table-of-contents)
     - [Summary](#summary)
     - [Usage](#usage)
+    - [Migrations](#migrations)
     - [Principle](#principle)
     - [Features](#features)
       - [Access parsed values](#access-parsed-values)
@@ -43,38 +44,34 @@ To generate a form body, in this case called `ExampleFormBody`;
 
 1. Create an abstract class `ExampleFormBody` annotated with `@GenerateFormBody()`.
 2. Add the `_$ExampleFormBodyFields` mixin.
-3. Create a single unnamed factory that returns an instance of `_$ExampleFormBody` containing all form fields that should be present in the form body. All parameters must be an instance of a class that extends `FormField`, a class provided by this package.
+3. Add a private empty constructor (`const ExampleFormBody._();`) and one unnamed factory that returns `_$ExampleFormBody`.
 
 A full example might look like this:
 
 ```dart
 import 'package:shape/shape.dart';
-import 'package:shape_addons/shape_addons.dart';
+import 'package:shape_starter_kit/shape_starter_kit.dart';
 
 part 'example_form_body.g.dart';
 
 @GenerateFormBody()
-abstract class ExampleFormBody with _$ExampleFormBodyFields {
+abstract class ExampleFormBody extends FormBody with _$ExampleFormBodyFields {
+  const ExampleFormBody._();
+
   factory ExampleFormBody({
-    required String? foo,
-    required String? bar,
-  }) {
-    return _$ExampleFormBody(
-      name: GenericFormField(
-        value: foo,
-        isRequired: true,
-      ),
-      otherName: RangedDoubleFormField(
-        value: bar,
-      ),
-    );
-  }
+    @FieldRequired() String? foo,
+    int? bar,
+  }) = _$ExampleFormBody;
 }
 
 void main() {
   final formBody = ExampleFormBody();
 }
 ```
+
+### Migrations
+
+- [0.0.1 → 0.1.0](docs/migrations/0.0.1-to-0.1.0.md)
 
 ### Principle
 
@@ -135,7 +132,7 @@ To run the example, run `build_runner` in [the `example` folder](https://github.
 
 ```shell
 cd example
-flutter pub run build_runner build --delete-conflicting-outputs
+flutter pub run build_runner build
 ```
 
 A new form body will be generated based on the contents of [`example/lib/example_form_body.dart`](https://github.com/betterment/shape/tree/main/packages/shape/example/lib/example_form_body.dart). After the code generator has completed, examine the contents of the file [`example/lib/example_form_body.g.dart`](https://github.com/betterment/shape/tree/main/packages/shape/example/lib/example_form_body.g.dart).

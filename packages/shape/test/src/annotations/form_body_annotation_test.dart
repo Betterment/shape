@@ -12,10 +12,25 @@ void main() {
       check(buildSubject).returnsNormally().isA<GenerateFormBody>();
     });
 
-    test('has correct props', () {
+    test('compares equal when generateFormErrors matches', () {
       final subject = buildSubject();
 
-      check(subject.props).deepEquals([subject.generateFormErrors]);
+      check(subject).equals(const GenerateFormBody(generateFormErrors: true));
+    });
+
+    test('hashCode matches generateFormErrors', () {
+      check(
+        buildSubject(generateFormErrors: true).hashCode,
+      ).equals(true.hashCode);
+      check(
+        buildSubject(generateFormErrors: false).hashCode,
+      ).equals(false.hashCode);
+    });
+  });
+
+  group('FieldRequired annotation', () {
+    test('can be constructed', () {
+      check(() => const FieldRequired()).returnsNormally().isA<FieldRequired>();
     });
   });
 }

@@ -23,7 +23,7 @@ class FormBodyGenerator with SourceGenerator {
   final List<FormBodyFieldMetadata> fields;
 
   String _getValue(FormBodyFieldMetadata field) {
-    final name = field.fieldIdentifier.name;
+    final name = field.fieldName;
     if (!field.extendsFormField) {
       return name;
     } else {
@@ -32,7 +32,7 @@ class FormBodyGenerator with SourceGenerator {
   }
 
   String _getRawValue(FormBodyFieldMetadata field) {
-    final name = field.fieldIdentifier.name;
+    final name = field.fieldName;
     if (!field.extendsFormField) {
       return name;
     } else {
@@ -42,6 +42,13 @@ class FormBodyGenerator with SourceGenerator {
 
   @override
   void write(SourceBuffer buffer) {
+    final constructorArguments = fields
+        .map(
+          (field) =>
+              field.isCustomWrapper ? field.fieldName : field.wrapperExpression,
+        )
+        .join(', ');
+
     buffer
       ..writeComment(
         'Form Body "${generatedClassNames.generatedFormBodyClassName}"',
@@ -50,23 +57,23 @@ class FormBodyGenerator with SourceGenerator {
       ..writeClassDeclarationStart(
         name: generatedClassNames.generatedFormBodyClassName,
         extendedClass: generatedClassNames.formBodyClassName,
-        mixins: [
-          generatedClassNames.generatedFormBodyFieldsMixinName,
-          'EquatableMixin',
-        ],
       )
-      ..writeClassFactoryConstructor(
+      ..writeFactoryConstructorBody(
         className: generatedClassNames.generatedFormBodyClassName,
-        factoryName: '',
-        constructorName: '_',
         parameters: [
           for (final field in fields)
             FunctionParameter(
-              type: field.formClassName,
-              name: field.fieldIdentifier.name,
-              isRequired: true,
+              type: field.isCustomWrapper
+                  ? field.formClassName
+                  : field.rawValueType.potentiallyNullableDisplayString,
+              name: field.fieldName,
+              isRequired: field.isFactoryParameterRequired,
             ),
         ],
+        body:
+            'return ${generatedClassNames.generatedFormBodyClassName}._('
+            '$constructorArguments,'
+            ');',
       )
       ..writeClassConstructor(
         className: generatedClassNames.generatedFormBodyClassName,
@@ -75,26 +82,25 @@ class FormBodyGenerator with SourceGenerator {
           for (final field in fields)
             FunctionParameter(
               type: field.formClassName,
-              name: '_${field.fieldIdentifier.name}',
+              name: '_${field.fieldName}',
             ),
         ],
         useConstConstructor: true,
         useNamedParameters: false,
         supertypeConstructorName: '_',
-        passParametersToSuper: false,
       );
 
     for (final field in fields) {
       buffer
         ..writeClassField(
           type: field.formClassName,
-          name: '_${field.fieldIdentifier.name}',
+          name: '_${field.fieldName}',
           isFinal: true,
           isOverride: true,
         )
         ..writeClassGetter(
           type: field.valueType.potentiallyNullableDisplayString,
-          name: field.fieldIdentifier.name,
+          name: field.fieldName,
           value: '_${_getValue(field)}',
           isOverride: true,
         );
@@ -113,7 +119,7 @@ class FormBodyGenerator with SourceGenerator {
     if (!enclosingClassOverridesValidateMethod) {
       final validationFields = fields
           .where((f) => f.extendsFormField)
-          .map((f) => f.fieldIdentifier.name);
+          .map((f) => f.fieldName);
       buffer.writeSingleReturnFunction(
         returnType: generatedClassNames.generatedFormErrorsClassName,
         functionName: kValidateMethodName,
@@ -131,17 +137,9 @@ class FormBodyGenerator with SourceGenerator {
         value: '${generatedClassNames.generatedCopyWithImplClassName}(this)',
         isOverride: true,
       )
-      ..writeClassGetter(
-        type: 'List<${'Object'.nullableTypeString}>',
-        name: 'props',
-        value: '[${fields.map((f) => '_${_getRawValue(f)},').join()}]',
-        isOverride: true,
-      )
-      ..writeClassGetter(
-        type: 'bool',
-        name: 'stringify',
-        value: 'true',
-        isOverride: true,
+      ..writeEqualityOperators(
+        className: generatedClassNames.generatedFormBodyClassName,
+        equalityFields: [for (final field in fields) '_${_getRawValue(field)}'],
       )
       ..writeClassDeclarationEnd()
       ..writeComment(
@@ -157,8 +155,8 @@ class FormBodyGenerator with SourceGenerator {
         parameters: [
           for (final field in fields)
             FunctionParameter(
-              type: field.rawValueType.potentiallyNullableDisplayString,
-              name: field.fieldIdentifier.name,
+              type: _copyWithParameterType(field),
+              name: field.fieldName,
               isRequired: false,
             ),
         ],
@@ -187,11 +185,9 @@ class FormBodyGenerator with SourceGenerator {
       )
       ..writeStaticConstClassField(name: '_defaultValue', value: 'Object()');
 
-    final fieldNames = fields.map((f) => f.fieldIdentifier.name);
+    final fieldNames = fields.map((f) => f.fieldName);
     final copyWithFields = [
-      for (final field in fields)
-        '''
-${field.fieldIdentifier.name}: ${field.fieldIdentifier.name} == _defaultValue ? _instance._${_getRawValue(field)} : ${field.fieldIdentifier.name} as ${field.rawValueType.potentiallyNullableDisplayString},''',
+      for (final field in fields) _copyWithArgument(field),
     ];
 
     buffer
@@ -206,10 +202,34 @@ ${field.fieldIdentifier.name}: ${field.fieldIdentifier.name} == _defaultValue ? 
               defaultValue: '_defaultValue',
             ),
         ],
+        // Always call the generated factory so extra user-factory-only params
+        // (e.g. construction flags) are not required.
         returnValue:
-            '''${generatedClassNames.formBodyClassName}(${copyWithFields.join()})''',
+            '''${generatedClassNames.generatedFormBodyClassName}(${copyWithFields.join()})''',
         isOverride: true,
       )
       ..writeClassDeclarationEnd();
+  }
+
+  /// copyWith accepts FormField instances for custom wrappers and raw values
+  /// for inferred wrappers.
+  String _copyWithParameterType(FormBodyFieldMetadata field) {
+    if (field.isCustomWrapper) {
+      return field.formClassName;
+    }
+    return field.rawValueType.potentiallyNullableDisplayString;
+  }
+
+  String _copyWithArgument(FormBodyFieldMetadata field) {
+    final name = field.fieldName;
+    if (field.isCustomWrapper) {
+      return '''
+$name: $name == _defaultValue ? _instance._$name : $name! as ${field.formClassName},''';
+    }
+
+    final rawType = field.rawValueType.potentiallyNullableDisplayString;
+    final cast = rawType.endsWith('?') ? 'as $rawType' : '! as $rawType';
+    return '''
+$name: $name == _defaultValue ? _instance._${_getRawValue(field)} : $name $cast,''';
   }
 }

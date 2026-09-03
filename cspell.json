@@ -1,8 +1,3 @@
 {
-    "words": [
-        "Bodyless",
-        "pana",
-        "webp",
-        "writeln"
-    ]
+  "words": ["Bodyless", "pana", "webp", "writeln", "nullable"]
 }

@@ -6,20 +6,17 @@ part of 'example_form_body.dart';
 // ShapeGenerator
 // **************************************************************************
 
+// ignore_for_file: unused_element, cast_nullable_to_non_nullable, prefer_const_constructors_in_immutables
 // Form Body "_$ExampleFormBody"
 @immutable
-class _$ExampleFormBody extends ExampleFormBody
-    with _$ExampleFormBodyFields, EquatableMixin {
-  factory _$ExampleFormBody({
-    required GenericFormField<String?> name,
-    required GenericFormField<int?> age,
-  }) {
-    return _$ExampleFormBody._(name, age);
+class _$ExampleFormBody extends ExampleFormBody {
+  factory _$ExampleFormBody({String? name, int? age}) {
+    return _$ExampleFormBody._(
+      GenericFormField<String?>(name, isRequired: true),
+      GenericFormField<int?>(age),
+    );
   }
-  const _$ExampleFormBody._(
-    this._name,
-    this._age,
-  ) : super._();
+  const _$ExampleFormBody._(this._name, this._age) : super._();
   @override
   final GenericFormField<String?> _name;
   @override
@@ -30,36 +27,30 @@ class _$ExampleFormBody extends ExampleFormBody
   int? get age => _age.value;
   @override
   ExampleFormErrors validate() {
-    return ExampleFormErrors(
-      name: _name.validate(),
-      age: _age.validate(),
-    );
+    return ExampleFormErrors(name: _name.validate(), age: _age.validate());
   }
 
   @override
   _$ExampleFormBodyCopyWith get copyWith => _$ExampleFormBodyCopyWithImpl(this);
   @override
-  List<Object?> get props => [
-        _name.rawValue,
-        _age.rawValue,
-      ];
+  bool operator ==(Object other) {
+    return other is _$ExampleFormBody &&
+        other._name.rawValue == _name.rawValue &&
+        other._age.rawValue == _age.rawValue;
+  }
+
   @override
-  bool get stringify => true;
+  int get hashCode => Object.hash(_name.rawValue, _age.rawValue);
 }
 
 // Copy With Interface "_$ExampleFormBodyCopyWith"
 abstract class _$ExampleFormBodyCopyWith {
-  ExampleFormBody call({
-    String? name,
-    int? age,
-  });
+  ExampleFormBody call({String? name, int? age});
 }
 
 // Copy With Implementation "_$ExampleFormBodyCopyWithImpl"
 class _$ExampleFormBodyCopyWithImpl implements _$ExampleFormBodyCopyWith {
-  const _$ExampleFormBodyCopyWithImpl(
-    this._instance,
-  );
+  const _$ExampleFormBodyCopyWithImpl(this._instance);
   final _$ExampleFormBody _instance;
   static const _defaultValue = Object();
   @override
@@ -67,7 +58,7 @@ class _$ExampleFormBodyCopyWithImpl implements _$ExampleFormBodyCopyWith {
     Object? name = _defaultValue,
     Object? age = _defaultValue,
   }) {
-    return ExampleFormBody(
+    return _$ExampleFormBody(
       name: name == _defaultValue ? _instance._name.rawValue : name as String?,
       age: age == _defaultValue ? _instance._age.rawValue : age as int?,
     );
@@ -101,15 +92,10 @@ mixin _$ExampleFormBodyFields {
 
 // Form Errors "ExampleFormErrors"
 @immutable
-
 /// The form errors for the form body "ExampleFormBody".
-class ExampleFormErrors extends FormErrors<_$ExampleFormBody>
-    with EquatableMixin {
+class ExampleFormErrors extends FormErrors {
   /// The form errors for the form body "ExampleFormBody".
-  const ExampleFormErrors({
-    this.name,
-    this.age,
-  });
+  const ExampleFormErrors({this.name, this.age});
 
   /// The error for the name field.
   final GenericValidationError? name;
@@ -120,27 +106,22 @@ class ExampleFormErrors extends FormErrors<_$ExampleFormBody>
   /// Merges this ExampleFormErrors with the [other]
   /// by replacing any empty fields in this instance with the corresponding field in
   /// [other] while preserving the non-empty fields in this instance.
-  ExampleFormErrors mergeWhereEmptyWith({
-    required ExampleFormErrors other,
-  }) {
-    return ExampleFormErrors(
-      name: name ?? other.name,
-      age: age ?? other.age,
-    );
+  ExampleFormErrors mergeWhereEmptyWith({required ExampleFormErrors other}) {
+    return ExampleFormErrors(name: name ?? other.name, age: age ?? other.age);
   }
 
   /// Copies this ExampleFormErrors and replaces the provided fields.
   _ExampleFormErrorsCopyWith get copyWith =>
       _ExampleFormErrorsCopyWithImpl(this);
   @override
-  List<Object?> get errors => [
-        name,
-        age,
-      ];
+  List<Object?> get errors => [name, age];
   @override
-  List<Object?> get props => errors;
+  bool operator ==(Object other) {
+    return other is ExampleFormErrors && other.name == name && other.age == age;
+  }
+
   @override
-  bool get stringify => true;
+  int get hashCode => Object.hash(name, age);
 }
 
 // Copy With Interface "_ExampleFormErrorsCopyWith"
@@ -153,9 +134,7 @@ abstract class _ExampleFormErrorsCopyWith {
 
 // Copy With Implementation "_ExampleFormErrorsCopyWithImpl"
 class _ExampleFormErrorsCopyWithImpl implements _ExampleFormErrorsCopyWith {
-  const _ExampleFormErrorsCopyWithImpl(
-    this._instance,
-  );
+  const _ExampleFormErrorsCopyWithImpl(this._instance);
   final ExampleFormErrors _instance;
   static const _defaultValue = Object();
   @override
@@ -167,8 +146,9 @@ class _ExampleFormErrorsCopyWithImpl implements _ExampleFormErrorsCopyWith {
       name: name == _defaultValue
           ? _instance.name
           : name as GenericValidationError?,
-      age:
-          age == _defaultValue ? _instance.age : age as GenericValidationError?,
+      age: age == _defaultValue
+          ? _instance.age
+          : age as GenericValidationError?,
     );
   }
 }

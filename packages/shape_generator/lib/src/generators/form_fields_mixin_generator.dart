@@ -35,20 +35,20 @@ class FormFieldsMixinGenerator with SourceGenerator {
     for (final field in fields) {
       buffer
         ..writeBodylessClassGetter(
-          documentation: '''
-The internal ${field.fieldIdentifier.name} field form field.
+          documentation:
+              '''
+The internal ${field.fieldName} field form field.
 
 This property should not be exposed and is only to be used when implementing a
 custom `validate` method.
 ''',
           type: field.formClassName,
-          name: '_${field.fieldIdentifier.name}',
+          name: '_${field.fieldName}',
         )
         ..writeBodylessClassGetter(
-          documentation:
-              'The parsed value of the ${field.fieldIdentifier.name} field.',
+          documentation: 'The parsed value of the ${field.fieldName} field.',
           type: field.valueType.potentiallyNullableDisplayString,
-          name: field.fieldIdentifier.name,
+          name: field.fieldName,
         );
     }
 

@@ -34,9 +34,8 @@ class FormErrorsGenerator with SourceGenerator {
             'The form errors for the form body '
             '"${generatedClassNames.formBodyClassName}".',
         name: generatedClassNames.generatedFormErrorsClassName,
-        extendedClass:
-            'FormErrors<${generatedClassNames.generatedFormBodyClassName}>',
-        mixins: ['EquatableMixin'],
+        extendedClass: 'FormErrors',
+        mixins: [],
       )
       ..writeClassConstructor(
         documentation:
@@ -49,7 +48,7 @@ class FormErrorsGenerator with SourceGenerator {
             FunctionParameter(
               // Doesn't show up in a constructor.
               type: field.errorType.nonNullableDisplayString.nullableTypeString,
-              name: field.fieldIdentifier.name,
+              name: field.fieldName,
             ),
         ],
         useConstConstructor: true,
@@ -58,20 +57,21 @@ class FormErrorsGenerator with SourceGenerator {
 
     for (final field in fields) {
       buffer.writeClassField(
-        documentation: 'The error for the ${field.fieldIdentifier.name} field.',
+        documentation: 'The error for the ${field.fieldName} field.',
         type: field.errorType.nonNullableDisplayString.nullableTypeString,
-        name: field.fieldIdentifier.name,
+        name: field.fieldName,
         isFinal: true,
       );
     }
 
     final mergeWhereEmptyWithFields = [
       for (final field in fields)
-        '''${field.fieldIdentifier.name}: ${field.fieldIdentifier.name} ?? other.${field.fieldIdentifier.name},''',
+        '''${field.fieldName}: ${field.fieldName} ?? other.${field.fieldName},''',
     ];
     buffer
       ..writeSingleReturnFunction(
-        documentation: '''
+        documentation:
+            '''
 Merges this ${generatedClassNames.generatedFormErrorsClassName} with the [other]
 by replacing any empty fields in this instance with the corresponding field in
 [other] while preserving the non-empty fields in this instance.
@@ -99,20 +99,12 @@ Copies this ${generatedClassNames.generatedFormErrorsClassName} and replaces the
       ..writeClassGetter(
         type: 'List<${'Object'.nullableTypeString}>',
         name: 'errors',
-        value: '[${fields.map((f) => '${f.fieldIdentifier.name},').join()}]',
+        value: '[${fields.map((f) => '${f.fieldName},').join()}]',
         isOverride: true,
       )
-      ..writeClassGetter(
-        type: 'List<${'Object'.nullableTypeString}>',
-        name: 'props',
-        value: 'errors',
-        isOverride: true,
-      )
-      ..writeClassGetter(
-        type: 'bool',
-        name: 'stringify',
-        value: 'true',
-        isOverride: true,
+      ..writeEqualityOperators(
+        className: generatedClassNames.generatedFormErrorsClassName,
+        equalityFields: fields.map((field) => field.fieldName).toList(),
       )
       ..writeClassDeclarationEnd()
       ..writeComment(
@@ -128,12 +120,11 @@ Copies this ${generatedClassNames.generatedFormErrorsClassName} and replaces the
         parameters: [
           for (final field in fields)
             FunctionParameter(
-              type:
-                  field
-                      .errorType
-                      .potentiallyNullableDisplayString
-                      .nullableTypeString,
-              name: field.fieldIdentifier.name,
+              type: field
+                  .errorType
+                  .potentiallyNullableDisplayString
+                  .nullableTypeString,
+              name: field.fieldName,
               isRequired: false,
             ),
         ],
@@ -165,8 +156,7 @@ Copies this ${generatedClassNames.generatedFormErrorsClassName} and replaces the
 
     final copyWithFields = [
       for (final field in fields)
-        // ignore: no_adjacent_strings_in_list
-        '''${field.fieldIdentifier.name}: ${field.fieldIdentifier.name} == _defaultValue ? _instance.${field.fieldIdentifier.name} : ${field.fieldIdentifier.name} as ${field.errorType.potentiallyNullableDisplayString.nullableTypeString},''',
+        '''${field.fieldName}: ${field.fieldName} == _defaultValue ? _instance.${field.fieldName} : ${field.fieldName} as ${field.errorType.potentiallyNullableDisplayString.nullableTypeString},''',
     ];
     buffer
       ..writeSingleReturnFunction(
@@ -176,7 +166,7 @@ Copies this ${generatedClassNames.generatedFormErrorsClassName} and replaces the
           for (final field in fields)
             FunctionParameter(
               type: 'Object'.nullableTypeString,
-              name: field.fieldIdentifier.name,
+              name: field.fieldName,
               defaultValue: '_defaultValue',
             ),
         ],

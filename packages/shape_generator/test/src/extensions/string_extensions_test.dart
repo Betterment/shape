@@ -23,5 +23,15 @@ void main() {
         check('Object?'.nullableTypeString).equals('Object?');
       });
     });
+
+    group('removeIfPresent', () {
+      test('removes suffix when present', () {
+        check('foobar'.removeIfPresent('bar')).equals('foo');
+      });
+
+      test('returns unchanged when suffix is absent', () {
+        check('foo'.removeIfPresent('bar')).equals('foo');
+      });
+    });
   });
 }
